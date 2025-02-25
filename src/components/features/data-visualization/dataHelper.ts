@@ -71,7 +71,7 @@ export function createAgeDataChartConfig(
     yAlign: "bottom" as const,
     titleAlign: "center" as const,
     callbacks: {
-      label: (context: any) => {
+      label: (context: { dataset: { label: string }; raw: number }) => {
         return `${context.dataset.label}: ${Math.abs(context.raw)}`;
       },
     },
