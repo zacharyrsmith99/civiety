@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { resetGame } from "./gameSlice";
-import { FoodConsumptionByCohort } from "@/lib/game/core/calculators/foodCalculator";
+import { FoodConsumptionByCohort } from "../middleware/util/resources/foodActions";
 interface ResourcesState {
   food: number;
   foodProduction: number;
