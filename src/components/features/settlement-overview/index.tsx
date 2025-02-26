@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Tab } from "@/components/common/Tabs/types";
 import { TabPanel } from "@/components/common/Tabs/TabsPanel";
 import DataPanel from "../data-visualization";
-import { LaborManagement } from "../population/components/LaborManagement";
+import { LaborManagement } from "../population/LaborManagement";
 
 export const SettlementOverview = () => {
   const [activeTab, setActiveTab] = useState<string>("population");
