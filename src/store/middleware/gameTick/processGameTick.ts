@@ -9,6 +9,7 @@ import {
 import { updateFood } from "@/store/slices/resourcesSlice";
 import { advanceTime } from "@/store/slices/gameSlice";
 import {
+  calculateStarvationDeathRates,
   simulateBirths,
   simulateNaturalPopulationChange,
 } from "../util/populationCohortActions";
@@ -64,9 +65,12 @@ export function processGameTick(
 
   state = store.getState();
 
+  const starvationMultipliers = calculateStarvationDeathRates(state);
+
   const { newCohorts, newTotal } = simulateNaturalPopulationChange(
     state.populationCohorts.cohorts,
     tickRateMultiplier,
+    starvationMultipliers,
   );
   store.dispatch(updateCohorts({ cohorts: newCohorts, total: newTotal }));
   state = store.getState();

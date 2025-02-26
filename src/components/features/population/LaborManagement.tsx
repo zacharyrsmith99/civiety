@@ -5,7 +5,6 @@ import {
   OccupationsState,
   setOccupationAllocation,
 } from "@/store/slices/occupationsSlice";
-import { getBaseProductionResourcesWorkerCapacity } from "@/store/middleware/util/occupationActions";
 import { HunterSlider } from "./components/HunterSlider";
 import { GathererSlider } from "./components/GathererSlider";
 
@@ -21,9 +20,6 @@ interface OccupationSlider {
 export const LaborManagement: React.FC = () => {
   const dispatch = useAppDispatch();
   const workingPopulation = useAppSelector(getWorkingAgePopulation);
-  const baseProductionResourcesWorkerCapacity = useAppSelector(
-    getBaseProductionResourcesWorkerCapacity,
-  );
   const { size: occupationSize, occupationAllocation } = useAppSelector(
     (state) => state.occupations,
   );
@@ -33,8 +29,6 @@ export const LaborManagement: React.FC = () => {
     0,
   );
   const unemployed = workingPopulation - totalEmployed;
-
-  const baseResourceProducers = ["hunters", "gatherers"];
 
   const [sliders, setSliders] = useState<OccupationSlider[]>([
     {

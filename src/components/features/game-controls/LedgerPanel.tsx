@@ -17,22 +17,22 @@ const LedgerPanel = () => {
   const netFoodChangePerSecond = foodProduction - baseConsumption;
   const isStarving = food === 0;
 
-  const adultPopulation = useAppSelector((state) =>
-    getCohortPopulation(state, { ageGroup: "adults" }),
-  );
   const childrenPopulation = useAppSelector((state) =>
     getCohortPopulation(state, { ageGroup: "children" }),
+  );
+  const adultPopulation = useAppSelector((state) =>
+    getCohortPopulation(state, { ageGroup: "adults" }),
   );
   const elderPopulation = useAppSelector((state) =>
     getCohortPopulation(state, { ageGroup: "elders" }),
   );
 
   const resources = [
-    { name: "Gold", icon: "💰", amount: 1000, change: 2.5 },
+    { name: "Gold", icon: "💰", amount: 0, change: 0 },
     { name: "Food", icon: "🌾", amount: food, change: netFoodChangePerSecond },
-    { name: "Stone", icon: "🪨", amount: 500, change: -1.2 },
-    { name: "Wood", icon: "🪵", amount: 750, change: 1.8 },
-    { name: "Hides", icon: "🦊", amount: 250, change: 0.5 },
+    { name: "Stone", icon: "🪨", amount: 0, change: 0 },
+    { name: "Wood", icon: "🪵", amount: 0, change: 0 },
+    { name: "Hides", icon: "🦊", amount: 0, change: 0 },
   ];
 
   return (
@@ -68,8 +68,8 @@ const LedgerPanel = () => {
 
             <div className="space-y-1.5">
               {[
-                { label: "Adults", value: adultPopulation },
                 { label: "Children", value: childrenPopulation },
+                { label: "Adults", value: adultPopulation },
                 { label: "Elders", value: elderPopulation },
               ].map(({ label, value }) => (
                 <div key={label} className="flex items-center justify-between">

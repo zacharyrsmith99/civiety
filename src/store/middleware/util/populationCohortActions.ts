@@ -35,6 +35,7 @@ function calculateDeaths(population: number, chanceOfDeath: number): number {
 export function simulateNaturalPopulationChange(
   cohorts: Record<string, ChildCohort | AdultCohort | ElderCohort>,
   tickRateMultiplier: number,
+  starvationMultipliers: Record<string, number> = {},
 ): {
   newCohorts: Record<string, ChildCohort | AdultCohort | ElderCohort>;
   newTotal: number;
@@ -80,7 +81,7 @@ export function simulateNaturalPopulationChange(
     const newAgeDistribution = [...cohort.ageDistribution];
 
     for (let i = newAgeDistribution.length - 1; i >= 0; i--) {
-      const [size, chanceOfDeath, chanceOfBirth, accumulatedAging] =
+      const [size, baseChanceOfDeath, chanceOfBirth, accumulatedAging] =
         newAgeDistribution[i];
 
       const newAccumulatedAging =
@@ -94,7 +95,7 @@ export function simulateNaturalPopulationChange(
         const newSize = size - agingPopulation;
         newAgeDistribution[i] = [
           newSize,
-          chanceOfDeath,
+          baseChanceOfDeath,
           chanceOfBirth,
           remainingAccumulatedAging,
         ];
@@ -133,7 +134,7 @@ export function simulateNaturalPopulationChange(
       } else {
         newAgeDistribution[i] = [
           size,
-          chanceOfDeath,
+          baseChanceOfDeath,
           chanceOfBirth,
           newAccumulatedAging,
         ];
@@ -142,9 +143,11 @@ export function simulateNaturalPopulationChange(
 
     const finalAgeDistribution = newAgeDistribution.map(
       ([size, chanceOfDeath, chanceOfBirth, accumulatedAging], index) => {
+        const starvationMultiplier = starvationMultipliers[cohortId] || 1.0;
+        const adjustedChanceOfDeath = chanceOfDeath * starvationMultiplier;
         const deaths = calculateDeaths(
           size,
-          chanceOfDeath * tickRateMultiplier,
+          adjustedChanceOfDeath * tickRateMultiplier,
         );
         cohortDeaths += deaths;
 
@@ -162,6 +165,7 @@ export function simulateNaturalPopulationChange(
         ] as AgeStats;
       },
     );
+
     totalDeaths += cohortDeaths;
     const cohortSize = finalAgeDistribution.reduce(
       (sum, [size]) => sum + size,
@@ -287,6 +291,24 @@ export function simulateBirths(state: RootState, tickRateMultiplier: number) {
       populationBaseGrowthRate,
     );
   }
+
+  // Calculate a fertility modifier based on food security
+  let fertilityModifier = 1.0;
+  const food = state.resources.food;
+  const foodConsumption = state.resources.newFoodConsumption;
+
+  if (foodConsumption > 0) {
+    const daysOfFoodRemaining = food / foodConsumption;
+
+    if (food <= 0) {
+      fertilityModifier = 0.1;
+    } else if (daysOfFoodRemaining < 30) {
+      fertilityModifier = Math.max(0.3, daysOfFoodRemaining / 30);
+    }
+  }
+
+  populationGrowthRateMultiplied *= fertilityModifier;
+
   const growthThisTick =
     breedingPairs * populationGrowthRateMultiplied * tickRateMultiplier;
   const totalAccumulated = currentAccumulator + growthThisTick;
@@ -309,4 +331,78 @@ export function simulateBirths(state: RootState, tickRateMultiplier: number) {
     newGrowthAccumulator,
     newChildren,
   };
+}
+
+export function calculateStarvationDeathRates(
+  state: RootState,
+): Record<string, number> {
+  const { food } = state.resources;
+  const foodProduction = state.resources.foodProduction;
+  const foodConsumption = state.resources.newFoodConsumption;
+
+  if (foodConsumption <= 0) {
+    return Object.keys(state.populationCohorts.cohorts).reduce(
+      (acc, cohortId) => {
+        acc[cohortId] = 1.0;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+  }
+
+  const ageGroupVulnerability = {
+    children: 3.0,
+    adults: 1.0,
+    elders: 2.5,
+  };
+
+  const daysOfFoodRemaining = Math.max(0, food / foodConsumption);
+  const stockFactor = Math.min(1, daysOfFoodRemaining / 90);
+
+  const changeRate = foodProduction / foodConsumption; // Ratio of production to consumption
+  const changeFactor = changeRate >= 1 ? 1.0 : Math.max(0, changeRate); // 0-1 based on sustainability
+
+  const absoluteStarvationFactor = food <= 0 ? 0.0 : 1.0;
+
+  let foodSecurityScore =
+    stockFactor * 0.5 + changeFactor * 0.3 + absoluteStarvationFactor * 0.2;
+  foodSecurityScore = Math.max(0, Math.min(1, foodSecurityScore));
+
+  const deathRateMultipliers: Record<string, number> = {};
+
+  Object.entries(state.populationCohorts.cohorts).forEach(
+    ([cohortId, cohort]) => {
+      const ageGroup = cohort.ageGroup;
+
+      let multiplier = 1.0;
+
+      if (foodSecurityScore < 0.95) {
+        if (food <= 0) {
+          multiplier =
+            10 *
+            ageGroupVulnerability[
+              ageGroup as keyof typeof ageGroupVulnerability
+            ];
+        } else if (foodSecurityScore < 0.5) {
+          // More severe food insecurity - significant death rate increases
+          // Cubed function for exponential effect as situation worsens
+          const severityFactor = Math.pow(1 - foodSecurityScore, 2) * 5;
+          multiplier =
+            1 +
+            severityFactor *
+              ageGroupVulnerability[
+                ageGroup as keyof typeof ageGroupVulnerability
+              ];
+        } else {
+          // Mild food insecurity - small increases to death rate
+          // Linear scaling for minor effects
+          const severityFactor = (1 - foodSecurityScore) * 2;
+          multiplier = 1 + severityFactor;
+        }
+      }
+      deathRateMultipliers[cohortId] = multiplier;
+    },
+  );
+
+  return deathRateMultipliers;
 }
