@@ -78,6 +78,19 @@ const checkCanAssign = (
   }
 };
 
+export function getBaseProductionResourcesWorkerCapacity(state: RootState) {
+  const baseProductionResourcesWorkerCapacity =
+    state.land.baseProductionResourcesWorkerCapacity;
+  const ownedTiles = Object.values(state.land.tiles).filter(
+    (tile) => tile.controlled,
+  );
+
+  const workerCapacity = ownedTiles.reduce((acc, tile) => {
+    return acc + (baseProductionResourcesWorkerCapacity - tile.usedSpaceUnits);
+  }, 0);
+  return workerCapacity;
+}
+
 export function reallocateOccupations(state: RootState) {
   const size: OccupationsState["size"] = {
     hunters: 0,
@@ -94,22 +107,35 @@ export function reallocateOccupations(state: RootState) {
   };
   const workingPopulation = getWorkingAgePopulation(state);
   let remainingPopulation = workingPopulation;
+  const baseProductionResourcesWorkerCapacity =
+    getBaseProductionResourcesWorkerCapacity(state);
 
-  Object.entries(state.occupations.occupationAllocation).forEach(
-    ([key, value]) => {
-      const keyValue = key as keyof OccupationsState["occupationAllocation"];
-      size[keyValue] = Math.floor(value * workingPopulation);
-      remainingPopulation -= size[keyValue];
-    },
+  remainingPopulation = Math.min(
+    remainingPopulation,
+    baseProductionResourcesWorkerCapacity,
   );
+  const populationToAssign = Math.min(remainingPopulation, workingPopulation);
+
+  const occupationEntries = Object.entries(
+    state.occupations.occupationAllocation,
+  );
+  for (let i = 0; i < occupationEntries.length; i++) {
+    const [key, value] = occupationEntries[i];
+    const keyValue = key as keyof OccupationsState["occupationAllocation"];
+    size[keyValue] = Math.floor(value * populationToAssign);
+    remainingPopulation -= size[keyValue];
+  }
 
   if (remainingPopulation > 0) {
-    Object.keys(size).forEach((key) => {
+    const sizeKeys = Object.keys(size);
+    for (let i = 0; i < sizeKeys.length && remainingPopulation > 0; i++) {
+      const key = sizeKeys[i];
       if (checkCanAssign(size, key as keyof OccupationsState["size"])) {
         size[key as keyof OccupationsState["size"]] += remainingPopulation;
         remainingPopulation = 0;
+        break;
       }
-    });
+    }
   }
   return { size, remainingPopulation };
 }

@@ -1,4 +1,12 @@
-import { GridPosition, LandState, LandTile } from "../types/land";
+import {
+  BiomeType,
+  GridPosition,
+  HousingBuilding,
+  HousingBuildingType,
+  LandState,
+  LandTile,
+  TerrainType,
+} from "../types/land";
 
 export const positionKey = (position: GridPosition): string => {
   return `${position.x},${position.y}`;
@@ -13,18 +21,41 @@ const generateInitialMap = (): Record<string, LandTile> => {
       const position = { x, y };
       const key = positionKey(position);
 
-      tiles[key] = {
+      const tile = {
         position,
-        biome: "grassland",
-        terrain: "flat",
+        biome: "grassland" as BiomeType,
+        terrain: "flat" as TerrainType,
+        buildings: {
+          housing: {},
+          agriculture: {},
+          industry: {},
+        },
+        allowHousing: true,
+        allowAgriculture: true,
+        allowIndustry: true,
+        usedSpaceUnits: 0,
         discovered: isControlled,
         controlled: isControlled,
         improvements: [],
       };
+
+      tiles[key] = tile;
     }
   }
 
   tiles["0,0"].improvements = [{ type: "settlement", level: 1 }];
+  (
+    tiles["0,0"].buildings.housing as Record<
+      HousingBuildingType,
+      HousingBuilding
+    >
+  )["makeshiftHousing"] = {
+    level: 1000,
+    spaceUnits: 1,
+    capacity: 3,
+  };
+
+  tiles["0,0"].usedSpaceUnits = 1000;
 
   return tiles;
 };
@@ -34,6 +65,7 @@ export const initialState: LandState = {
   viewportCenter: { x: 0, y: 0 },
   viewportZoom: 1,
   gridSize: { width: 7, height: 7 },
+  baseProductionResourcesWorkerCapacity: 1000,
   biomeBaseBuildingDifficulty: {
     grassland: 1,
     steppe: 1,

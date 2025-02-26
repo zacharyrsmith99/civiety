@@ -97,6 +97,7 @@ export const initialState: GameState = {
   year: 0,
   isPaused: false,
   tickRate: "month",
+  tickSpeed: 1000,
   // FOOD
   foodConsumptionBaseRates: [0.00274],
   foodConsumptionMultipliers: [],

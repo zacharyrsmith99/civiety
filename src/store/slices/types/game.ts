@@ -8,6 +8,7 @@ export interface GameState {
   year: number;
   isPaused: boolean;
   tickRate: TickRate;
+  tickSpeed: number;
   // FOOD
   foodConsumptionBaseRates: number[];
   foodConsumptionMultipliers: number[];

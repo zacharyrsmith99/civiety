@@ -8,30 +8,47 @@ export function createBaseGameLoopMiddleware(): Middleware<
   Dispatch<UnknownAction>
 > {
   let gameLoop: NodeJS.Timeout | null = null;
+  let currentTickSpeed = 0;
 
   return (store) => {
-    const startGameLoop = () => {
-      if (gameLoop === null) {
+    const restartGameLoop = () => {
+      const state = store.getState();
+
+      if (gameLoop === null || currentTickSpeed !== state.game.tickSpeed) {
+        if (gameLoop !== null) {
+          clearInterval(gameLoop);
+          gameLoop = null;
+        }
+
+        currentTickSpeed = state.game.tickSpeed;
+
         gameLoop = setInterval(() => {
-          const state = store.getState();
-          if (!state.game.isPaused) {
+          const currentState = store.getState();
+          if (!currentState.game.isPaused) {
             try {
               processGameTick(store);
             } catch (error) {
               console.error("Error in game loop:", error);
             }
           }
-        }, 1000);
+        }, currentTickSpeed);
       }
     };
 
-    startGameLoop();
+    restartGameLoop();
 
     return (next) => (action) => {
+      const result = next(action);
+
+      if ((action as any).type === "game/setTickSpeed") {
+        restartGameLoop();
+      }
+
       if ((action as any).type === "game/manualTick") {
         processGameTick(store);
       }
-      return next(action);
+
+      return result;
     };
   };
 }

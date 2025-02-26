@@ -42,6 +42,9 @@ const gameSlice = createSlice({
     setTickRate: (state, action: PayloadAction<TickRate>) => {
       state.tickRate = action.payload;
     },
+    setTickSpeed: (state, action: PayloadAction<number>) => {
+      state.tickSpeed = action.payload;
+    },
   },
 });
 
@@ -54,5 +57,6 @@ export const {
   setPaused,
   resetGame,
   setTickRate,
+  setTickSpeed,
 } = gameSlice.actions;
 export default gameSlice.reducer;
