@@ -60,7 +60,6 @@ export const landSlice = createSlice({
       const { direction } = action.payload;
       const { width, height } = state.gridSize;
 
-      // Add new undiscovered tiles based on direction
       if (direction === "north" || direction === "south") {
         const y =
           direction === "north"
@@ -73,11 +72,20 @@ export const landSlice = createSlice({
 
           state.tiles[key] = {
             position,
-            biome: "grassland", // Default biome
+            biome: "grassland",
             terrain: "flat",
             discovered: false,
             controlled: false,
             improvements: [],
+            buildings: {
+              housing: {},
+              agriculture: {},
+              industry: {},
+            },
+            allowHousing: false,
+            allowAgriculture: false,
+            allowIndustry: false,
+            usedSpaceUnits: 0,
           };
         }
 
@@ -103,6 +111,15 @@ export const landSlice = createSlice({
             discovered: false,
             controlled: false,
             improvements: [],
+            buildings: {
+              housing: {},
+              agriculture: {},
+              industry: {},
+            },
+            allowHousing: false,
+            allowAgriculture: false,
+            allowIndustry: false,
+            usedSpaceUnits: 0,
           };
         }
 

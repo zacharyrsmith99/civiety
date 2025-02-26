@@ -21,7 +21,7 @@ const generateInitialMap = (): Record<string, LandTile> => {
       const position = { x, y };
       const key = positionKey(position);
 
-      const tile = {
+      const tile: LandTile = {
         position,
         biome: "grassland" as BiomeType,
         terrain: "flat" as TerrainType,
