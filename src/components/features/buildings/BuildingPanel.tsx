@@ -135,7 +135,15 @@ export const BuildingPanel: React.FC<BuildingPanelProps> = ({
                   className="bg-slate-800/70 hover:bg-slate-700/70 text-amber-100 rounded-lg border border-amber-700/30 p-3 transition-all duration-200 shadow-lg flex items-center cursor-pointer"
                   onClick={handleAddBuilding}
                 >
-                  <div className="text-xl mr-3">🏚️</div>
+                  <div className="text-xl mr-3">
+                    <div className="flex items-center">
+                      <img
+                        src="/icons/makeshift-housing-icon.png"
+                        alt="Makeshift Housing"
+                        className="w-24 h-24"
+                      />
+                    </div>
+                  </div>
                   <div className="flex-1">
                     <div className="font-medieval text-sm">
                       Makeshift Housing
