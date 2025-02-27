@@ -5,6 +5,7 @@ import {
   AgeStats,
 } from "@/store/slices/types/population";
 import { RootState } from "@/store/types";
+import { getTotalHousingCapacity } from "./housingActions";
 
 function calculateDeaths(population: number, chanceOfDeath: number): number {
   // For very small populations, use exact binomial
@@ -176,6 +177,9 @@ export function simulateNaturalPopulationChange(
     const newCohort = {
       ...cohort,
       size: cohortSize,
+      statistics: {
+        previousSize: cohort.size,
+      },
       ageDistribution: finalAgeDistribution,
     };
 
@@ -307,6 +311,13 @@ export function simulateBirths(state: RootState, tickRateMultiplier: number) {
     }
   }
 
+  const housingCapacity = getTotalHousingCapacity(state);
+  const totalPopulation = state.populationCohorts.total;
+  const housingScore = Math.min(1, housingCapacity / totalPopulation);
+  if (housingScore < 1) {
+    fertilityModifier *= housingScore * 0.5;
+  }
+
   populationGrowthRateMultiplied *= fertilityModifier;
 
   const growthThisTick =
@@ -333,6 +344,12 @@ export function simulateBirths(state: RootState, tickRateMultiplier: number) {
   };
 }
 
+const ageGroupVulnerability = {
+  children: 3.0,
+  adults: 1.0,
+  elders: 2.5,
+};
+
 export function calculateStarvationDeathRates(
   state: RootState,
 ): Record<string, number> {
@@ -349,12 +366,6 @@ export function calculateStarvationDeathRates(
       {} as Record<string, number>,
     );
   }
-
-  const ageGroupVulnerability = {
-    children: 3.0,
-    adults: 1.0,
-    elders: 2.5,
-  };
 
   const daysOfFoodRemaining = Math.max(0, food / foodConsumption);
   const stockFactor = Math.min(1, daysOfFoodRemaining / 90);
@@ -405,4 +416,39 @@ export function calculateStarvationDeathRates(
   );
 
   return deathRateMultipliers;
+}
+
+export function calculateLackOfHousingDeathRates(
+  state: RootState,
+): Record<string, number> {
+  const totalHousingCapacity = getTotalHousingCapacity(state);
+  const totalPopulation = state.populationCohorts.total;
+  const populationGrowthRate = 0;
+  const housingProduction = 0;
+
+  const capacityFactor = Math.min(1, totalHousingCapacity / totalPopulation);
+  const housingProductionFactor = 1;
+
+  let housingScore = capacityFactor * 0.9 + housingProductionFactor * 0.1;
+  housingScore = Math.max(0, Math.min(1, housingScore));
+
+  const housingDeathRateMultipliers: Record<string, number> = {};
+
+  Object.entries(state.populationCohorts.cohorts).forEach(
+    ([cohortId, cohort]) => {
+      const ageGroup = cohort.ageGroup;
+
+      let multiplier = 1.0;
+
+      if (housingScore < 1.0) {
+        multiplier =
+          (1 + (1 - housingScore) * 3) *
+          ageGroupVulnerability[ageGroup as keyof typeof ageGroupVulnerability]; // Adjust the factor (2) based on desired severity
+      }
+
+      housingDeathRateMultipliers[cohortId] = multiplier;
+    },
+  );
+
+  return housingDeathRateMultipliers;
 }

@@ -32,11 +32,16 @@ export type ElderAgeDistribution = FixedLengthArray<
   typeof ELDER_AGES
 >;
 
+export interface PopulationCohortStatistics {
+  previousSize: number;
+}
+
 export interface PopulationCohort {
   ageGroup: AgeGroup;
   gender: Gender;
   size: number;
   citizenship: Citizenship;
+  statistics: PopulationCohortStatistics;
 }
 
 export interface ChildCohort extends PopulationCohort {

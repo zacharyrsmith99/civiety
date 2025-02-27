@@ -134,6 +134,9 @@ export const setupPopulationCohorts = (): PopulationCohortsState => {
         gender: "male",
         size: initialChildSize,
         citizenship: "citizen",
+        statistics: {
+          previousSize: 0,
+        },
         ageDistribution: generateAgeDistributionByCohort(
           initialChildSize,
           "children",
@@ -144,6 +147,9 @@ export const setupPopulationCohorts = (): PopulationCohortsState => {
         gender: "female",
         size: initialChildSize,
         citizenship: "citizen",
+        statistics: {
+          previousSize: 0,
+        },
         ageDistribution: generateAgeDistributionByCohort(
           initialChildSize,
           "children",
@@ -154,6 +160,9 @@ export const setupPopulationCohorts = (): PopulationCohortsState => {
         gender: "male",
         size: initialAdultSize,
         citizenship: "citizen",
+        statistics: {
+          previousSize: 0,
+        },
         ageDistribution: generateAgeDistributionByCohort(
           initialAdultSize,
           "adults",
@@ -164,6 +173,9 @@ export const setupPopulationCohorts = (): PopulationCohortsState => {
         gender: "female",
         size: initialAdultSize,
         citizenship: "citizen",
+        statistics: {
+          previousSize: 0,
+        },
         ageDistribution: generateAgeDistributionByCohort(
           initialAdultSize,
           "adults",
@@ -174,6 +186,9 @@ export const setupPopulationCohorts = (): PopulationCohortsState => {
         gender: "male",
         size: initialElderSize,
         citizenship: "citizen",
+        statistics: {
+          previousSize: 0,
+        },
         ageDistribution: generateAgeDistributionByCohort(
           initialElderSize,
           "elders",
@@ -184,6 +199,9 @@ export const setupPopulationCohorts = (): PopulationCohortsState => {
         gender: "female",
         size: initialElderSize,
         citizenship: "citizen",
+        statistics: {
+          previousSize: 0,
+        },
         ageDistribution: generateAgeDistributionByCohort(
           initialElderSize,
           "elders",
