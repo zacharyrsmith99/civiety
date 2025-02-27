@@ -300,17 +300,8 @@ export function simulateBirths(state: RootState, tickRateMultiplier: number) {
   }
 
   let fertilityModifier = 1.0;
-  const food = state.resources.food;
-  const foodConsumption = state.resources.newFoodConsumption;
-
-  if (foodConsumption > 0) {
-    const daysOfFoodRemaining = food / foodConsumption;
-
-    if (food <= 0) {
-      fertilityModifier = 0.1;
-    } else if (daysOfFoodRemaining < 30) {
-      fertilityModifier = Math.max(0.3, daysOfFoodRemaining / 30);
-    }
+  if (foodSecurityScore < 1) {
+    fertilityModifier *= Math.min(1, foodSecurityScore * 1.2);
   }
 
   if (housingScore < 1) {
@@ -381,7 +372,7 @@ export function calculateStarvationDeathRates(state: RootState): {
   const absoluteStarvationFactor = food <= 0 ? 0.0 : 1.0;
 
   let foodSecurityScore =
-    stockFactor * 0.5 + changeFactor * 0.3 + absoluteStarvationFactor * 0.2;
+    stockFactor * 0.15 + changeFactor * 0.1 + absoluteStarvationFactor * 0.75;
   foodSecurityScore = Math.max(0, Math.min(1, foodSecurityScore));
 
   const starvationDeathRateMultipliers: Record<string, number> = {};
