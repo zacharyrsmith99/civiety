@@ -209,7 +209,10 @@ export const LaborManagement: React.FC = () => {
         )}
         {sliders
           .filter(
-            (slider) => slider.id !== "hunters" && slider.id !== "gatherers",
+            (slider) =>
+              slider.id !== "hunters" &&
+              slider.id !== "gatherers" &&
+              slider.id !== "laborers",
           )
           .map((slider) => (
             <div
