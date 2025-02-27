@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { GameMap } from "./GridMap";
 import {
@@ -10,16 +10,16 @@ import { GridPosition } from "@/store/slices/types/land";
 
 interface MapPanelProps {
   className?: string;
+  onTileSelect: (position: GridPosition | null) => void;
+  selectedPosition: GridPosition | null;
 }
 
-const MapPanel: React.FC<MapPanelProps> = ({ className = "" }) => {
+const MapPanel: React.FC<MapPanelProps> = ({
+  className = "",
+  onTileSelect,
+  selectedPosition,
+}) => {
   const dispatch = useAppDispatch();
-  const controlledTiles = useAppSelector(selectControlledTiles);
-
-  // Track selected tile for detailed view
-  const [selectedPosition, setSelectedPosition] = useState<GridPosition | null>(
-    null,
-  );
 
   const selectedTileFromState = useAppSelector((state) =>
     selectedPosition ? selectTileAt(state, selectedPosition) : null,
@@ -33,14 +33,14 @@ const MapPanel: React.FC<MapPanelProps> = ({ className = "" }) => {
       position.x === selectedPosition.x &&
       position.y === selectedPosition.y
     ) {
-      setSelectedPosition(null);
+      onTileSelect(null);
     } else {
-      setSelectedPosition(position);
+      onTileSelect(position);
     }
   };
 
   const handleMapBackgroundClick = () => {
-    setSelectedPosition(null);
+    onTileSelect(null);
   };
 
   const handleBuildImprovement = (improvementType: string) => {
@@ -75,7 +75,7 @@ const MapPanel: React.FC<MapPanelProps> = ({ className = "" }) => {
                     Tile Information
                   </h3>
                   <button
-                    onClick={() => setSelectedPosition(null)}
+                    onClick={() => onTileSelect(null)}
                     className="text-amber-400 hover:text-amber-200 ml-2"
                   >
                     ✕
@@ -83,18 +83,18 @@ const MapPanel: React.FC<MapPanelProps> = ({ className = "" }) => {
                 </div>
                 <p>
                   <span className="text-amber-400">Biome:</span>{" "}
-                  {selectedTile.terrain}
+                  {selectedTile.biome}
+                </p>
+                <p>
+                  <span className="text-amber-400">Buildings:</span>{" "}
+                  {Object.keys(selectedTile.buildings).join(", ")}
                 </p>
                 <p>
                   <span className="text-amber-400">Position:</span> (
                   {selectedPosition?.x}, {selectedPosition?.y})
                 </p>
                 <p>
-                  <span className="text-amber-400">Position:</span> (
-                  {selectedPosition?.x}, {selectedPosition?.y})
-                </p>
-                <p>
-                  <span className="text-amber-400">Type:</span>{" "}
+                  <span className="text-amber-400">Terrain:</span>{" "}
                   {selectedTile.terrain}
                 </p>
               </div>

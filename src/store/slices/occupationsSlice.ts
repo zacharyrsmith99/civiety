@@ -6,6 +6,7 @@ export interface OccupationsState {
     hunters: number;
     gatherers: number;
     farmers: number;
+    laborers: number;
     soldiers: number;
     coalMiners: number;
     ironMiners: number;
@@ -19,6 +20,7 @@ export interface OccupationsState {
     hunters: number;
     gatherers: number;
     farmers: number;
+    laborers: number;
     soldiers: number;
     coalMiners: number;
     ironMiners: number;

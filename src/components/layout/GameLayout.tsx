@@ -1,8 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import ResourcePanel from "../features/game-controls/LedgerPanel";
 import { SettlementOverview } from "../features/settlement-overview";
 import MapPanel from "../features/map/MapPanel";
+import { GridPosition } from "@/store/slices/types/land";
 
 const LogoPlaceholder = () => (
   <div className="flex items-center justify-center p-4 bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-amber-700/30 rounded-xl shadow-lg relative">
@@ -25,6 +26,13 @@ const LogoPlaceholder = () => (
 );
 
 export const GameLayout = () => {
+  const [selectedPosition, setSelectedPosition] = useState<GridPosition | null>(
+    null,
+  );
+  const handleTileSelect = (position: GridPosition | null) => {
+    setSelectedPosition(position);
+  };
+
   return (
     <div className="h-screen w-screen bg-slate-950 bg-gradient-to-br from-amber-950/10 to-slate-950 flex">
       {/* Left sidebar */}
@@ -37,7 +45,7 @@ export const GameLayout = () => {
           {/* Settlement overview container */}
           <div className="w-[60%] min-h-0 relative">
             <div className="absolute -top-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-600/20 to-transparent" />
-            <SettlementOverview />
+            <SettlementOverview selectedPosition={selectedPosition} />
           </div>
 
           {/* Map section with logo */}
@@ -49,7 +57,10 @@ export const GameLayout = () => {
             {/* Map */}
             <div className="flex-1 relative">
               <div className="absolute -top-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-600/20 to-transparent" />
-              <MapPanel />
+              <MapPanel
+                onTileSelect={handleTileSelect}
+                selectedPosition={selectedPosition}
+              />
             </div>
           </div>
         </div>

@@ -26,8 +26,13 @@ import {
   updateCohorts,
 } from "@/store/slices/populationCohortsSlice";
 import { setOccupationSize } from "@/store/slices/occupationsSlice";
-import { reallocateOccupations } from "../util/occupationActions";
+import {
+  calculateLaborerProduction,
+  reallocateOccupations,
+} from "../util/occupationActions";
 import { ChildCohort } from "@/store/slices/types/population";
+import { processBuildingQueue } from "../util/landActions";
+import { updateBuildings } from "@/store/slices/landSlice";
 
 export function processGameTick(
   store: MiddlewareAPI<Dispatch<UnknownAction>, RootState>,
@@ -46,8 +51,12 @@ export function processGameTick(
 
   const tickRateMultiplier = tickRateMultipliers[state.game.tickRate];
   // Calculate and update food
-  const { foodProduction, farmFoodProduction, gatherFoodProduction } =
-    calculateFoodProduction(state);
+  const {
+    foodProduction,
+    farmFoodProduction,
+    gatherFoodProduction,
+    hunterFoodProduction,
+  } = calculateFoodProduction(state);
   const { foodConsumption, foodConsumptionByCohort } =
     calculateFoodConsumption(state);
   const newFood = calculateNewFoodStock(
@@ -61,6 +70,7 @@ export function processGameTick(
       newFoodProduction: foodProduction,
       newFarmFoodProduction: farmFoodProduction,
       newGatherFoodProduction: gatherFoodProduction,
+      newHunterFoodProduction: hunterFoodProduction,
       newFoodConsumption: foodConsumption,
       newFoodConsumptionByCohort: foodConsumptionByCohort,
     }),
@@ -83,6 +93,17 @@ export function processGameTick(
   );
   store.dispatch(updateCohorts({ cohorts: newCohorts, total: newTotal }));
   state = store.getState();
+
+  if (state.land.buildingQueue.length > 0) {
+    const laborerProduction = calculateLaborerProduction(state);
+    const { newTiles, newBuildingQueue } = processBuildingQueue(
+      state,
+      laborerProduction,
+    );
+    store.dispatch(
+      updateBuildings({ tiles: newTiles, buildingQueue: newBuildingQueue }),
+    );
+  }
   const { newChildFemaleCohort, newChildMaleCohort, newGrowthAccumulator } =
     simulateBirths(state, tickRateMultiplier);
 

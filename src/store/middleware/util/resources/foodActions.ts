@@ -1,9 +1,4 @@
-import {
-  AgeGroup,
-  Citizenship,
-  Gender,
-  PopulationCohort,
-} from "@/store/slices/types/population";
+import { AgeGroup, Citizenship, Gender } from "@/store/slices/types/population";
 import { RootState } from "@/store/types";
 
 function calculateGatherFoodProduction(

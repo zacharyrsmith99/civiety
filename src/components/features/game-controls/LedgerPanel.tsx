@@ -286,7 +286,7 @@ const LedgerPanel = () => {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Tooltip
-                  content="Children are dependent members of your tribe. They require resources but don't contribute to labor."
+                  content="Children are aged 0 to 15. They consume the least resources and do not contribute to the labor force. They are one of the most vulnerable groups during times of crisis."
                   position="bottom"
                   width="220px"
                 >
@@ -318,7 +318,7 @@ const LedgerPanel = () => {
 
               <div className="flex items-center justify-between">
                 <Tooltip
-                  content="Adults are the productive workforce of your tribe. They gather resources, hunt, and perform other essential tasks."
+                  content="Adults are aged 16 to 64. They are the productive members of your tribe. They are the only employable members of your tribe, and they consume the most resources."
                   position="bottom"
                   width="220px"
                 >
@@ -350,7 +350,7 @@ const LedgerPanel = () => {
 
               <div className="flex items-center justify-between">
                 <Tooltip
-                  content="Elders are the experienced members of your tribe. They provide wisdom but have reduced productivity compared to adults."
+                  content="Elders are aged 64 and older. They do not contribute to the labor force, but consume less resources than adults. They are one of the most vulnerable groups during times of crisis. They also provide more innovative points than adults."
                   position="bottom"
                   width="220px"
                 >

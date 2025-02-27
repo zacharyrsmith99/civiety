@@ -3,13 +3,26 @@ import { Tab } from "@/components/common/Tabs/types";
 import { TabPanel } from "@/components/common/Tabs/TabsPanel";
 import DataPanel from "../data-visualization";
 import { LaborManagement } from "../population/LaborManagement";
+import { BuildingPanel } from "../buildings/BuildingPanel";
+import { useAppSelector } from "@/store/hooks";
+import { selectTileAt } from "@/store/slices/landSlice";
+import { GridPosition } from "@/store/slices/types/land";
 
-export const SettlementOverview = () => {
+export const SettlementOverview = ({
+  selectedPosition,
+}: {
+  selectedPosition: GridPosition | null;
+}) => {
   const [activeTab, setActiveTab] = useState<string>("population");
+
+  const selectedTile = useAppSelector((state) =>
+    selectedPosition ? selectTileAt(state, selectedPosition) : null,
+  );
 
   const tabs: Tab[] = [
     { id: "population", label: "Population Management" },
     { id: "data", label: "Data Views" },
+    { id: "buildings", label: "Buildings" },
   ];
 
   return (
@@ -98,6 +111,22 @@ export const SettlementOverview = () => {
 
               <div className="relative z-10">
                 <DataPanel />
+              </div>
+            </div>
+          </TabPanel>
+
+          <TabPanel tabId="buildings" activeTab={activeTab}>
+            <div className="h-full bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 rounded-xl p-6 flex flex-col relative">
+              <div className="absolute top-0 left-0 w-16 h-16 border-l-2 border-t-2 border-amber-600/20 rounded-tl-xl" />
+              <div className="absolute top-0 right-0 w-16 h-16 border-r-2 border-t-2 border-amber-600/20 rounded-tr-xl" />
+              <div className="absolute bottom-0 left-0 w-16 h-16 border-l-2 border-b-2 border-amber-600/20 rounded-bl-xl" />
+              <div className="absolute bottom-0 right-0 w-16 h-16 border-r-2 border-b-2 border-amber-600/20 rounded-br-xl" />
+
+              <div className="relative z-10">
+                <BuildingPanel 
+                  selectedTile={selectedTile}
+                  position={selectedPosition}
+                />
               </div>
             </div>
           </TabPanel>

@@ -66,6 +66,20 @@ export const initialState: LandState = {
   viewportZoom: 1,
   gridSize: { width: 7, height: 7 },
   baseProductionResourcesWorkerCapacity: 1000,
+  buildingCosts: {
+    housing: {
+      makeshiftHousing: 1,
+      hut: 2,
+    },
+    agriculture: {
+      farm: 4,
+    },
+    industry: {
+      mine: 50,
+      lumberCamp: 10,
+    },
+  },
+  buildingQueue: [],
   biomeBaseBuildingDifficulty: {
     grassland: 1,
     steppe: 1,

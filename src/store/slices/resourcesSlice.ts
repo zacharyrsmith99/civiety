@@ -1,29 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { resetGame } from "./gameSlice";
 import { FoodConsumptionByCohort } from "../middleware/util/resources/foodActions";
-interface ResourcesState {
-  food: number;
-  foodProduction: number;
-  farmFoodProduction: number;
-  gatherFoodProduction: number;
-  newFoodConsumption: number;
-  newFoodConsumptionByCohort: FoodConsumptionByCohort[];
-}
-
-const initialState: ResourcesState = {
-  food: 100,
-  foodProduction: 0,
-  farmFoodProduction: 0,
-  gatherFoodProduction: 0,
-  newFoodConsumption: 0,
-  newFoodConsumptionByCohort: [],
-};
-
+import { initialState } from "./types/resource";
 export interface UpdateFoodPayload {
   newFood: number;
   newFoodProduction: number;
   newFarmFoodProduction: number;
   newGatherFoodProduction: number;
+  newHunterFoodProduction: number;
   newFoodConsumption: number;
   newFoodConsumptionByCohort: FoodConsumptionByCohort[];
 }
@@ -37,6 +21,7 @@ const resourcesSlice = createSlice({
       state.foodProduction = action.payload.newFoodProduction;
       state.farmFoodProduction = action.payload.newFarmFoodProduction;
       state.gatherFoodProduction = action.payload.newGatherFoodProduction;
+      state.hunterFoodProduction = action.payload.newHunterFoodProduction;
       state.newFoodConsumption = action.payload.newFoodConsumption;
       state.newFoodConsumptionByCohort =
         action.payload.newFoodConsumptionByCohort;

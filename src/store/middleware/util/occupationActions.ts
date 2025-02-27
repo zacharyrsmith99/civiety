@@ -14,6 +14,10 @@ export function canAssignFarmer() {
   return true;
 }
 
+export function canAssignLaborer() {
+  return true;
+}
+
 export function canAssignSoldier() {
   return true;
 }
@@ -57,6 +61,8 @@ const checkCanAssign = (
       return canAssignGatherer();
     case "farmers":
       return canAssignFarmer();
+    case "laborers":
+      return canAssignLaborer();
     case "soldiers":
       return canAssignSoldier();
     case "coalMiners":
@@ -96,6 +102,7 @@ export function reallocateOccupations(state: RootState) {
     hunters: 0,
     gatherers: 0,
     farmers: 0,
+    laborers: 0,
     soldiers: 0,
     coalMiners: 0,
     ironMiners: 0,
@@ -138,4 +145,17 @@ export function reallocateOccupations(state: RootState) {
     }
   }
   return { size, remainingPopulation };
+}
+
+export function calculateLaborerProduction(state: RootState) {
+  const { laborerProductionBaseRates, laborerProductionMultipliers } =
+    state.game;
+  const laborers = state.occupations.size.laborers;
+  const laborerProduction = laborerProductionBaseRates.reduce(
+    (acc, rate, index) => {
+      return acc + rate * (1 + laborerProductionMultipliers[index]);
+    },
+    0,
+  );
+  return laborerProduction * laborers;
 }

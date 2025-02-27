@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../types";
-import { GridPosition, Improvement } from "./types/land";
+import { BuildingQueue, GridPosition, Improvement, LandTile } from "./types/land";
 import { positionKey } from "./util/initialLandState";
 import { initialState } from "./util/initialLandState";
 
@@ -8,6 +8,16 @@ export const landSlice = createSlice({
   name: "land",
   initialState,
   reducers: {
+    updateBuildings: (
+      state,
+      action: PayloadAction<{
+        tiles: Record<string, LandTile>;
+        buildingQueue: BuildingQueue[];
+      }>,
+    ) => {
+      state.tiles = action.payload.tiles;
+      state.buildingQueue = action.payload.buildingQueue;
+    },
     addImprovement: (
       state,
       action: PayloadAction<{
@@ -144,6 +154,10 @@ export const landSlice = createSlice({
         state.viewportZoom = Math.max(0.5, Math.min(3, zoom));
       }
     },
+
+    addBuildingToQueue: (state, action: PayloadAction<BuildingQueue>) => {
+      state.buildingQueue.push(action.payload);
+    },
   },
 });
 
@@ -154,6 +168,8 @@ export const {
   claimTile,
   expandMap,
   setViewport,
+  updateBuildings,
+  addBuildingToQueue,
 } = landSlice.actions;
 
 export const selectAllTiles = (state: RootState) => state.land.tiles;

@@ -31,4 +31,7 @@ export interface GameState {
   maleGenderRatio: number;
   fertilityAgeMin: number;
   fertilityAgeMax: number;
+  // OCCUPATIONS
+  laborerProductionBaseRates: number[];
+  laborerProductionMultipliers: number[];
 }

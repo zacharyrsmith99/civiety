@@ -7,6 +7,7 @@ import {
 } from "@/store/slices/occupationsSlice";
 import { HunterSlider } from "./components/HunterSlider";
 import { GathererSlider } from "./components/GathererSlider";
+import { LaborerSlider } from "./components/LaborerSlider";
 
 interface OccupationSlider {
   id: keyof OccupationsState["size"];
@@ -48,6 +49,13 @@ export const LaborManagement: React.FC = () => {
     {
       id: "hunters",
       label: "Hunters",
+      percentage: 0,
+      canAssign: true,
+      isAvailable: true,
+    },
+    {
+      id: "laborers",
+      label: "Laborers",
       percentage: 0,
       canAssign: true,
       isAvailable: true,
@@ -162,7 +170,7 @@ export const LaborManagement: React.FC = () => {
 
   const hunterSlider = sliders.find((slider) => slider.id === "hunters");
   const gathererSlider = sliders.find((slider) => slider.id === "gatherers");
-
+  const laborerSlider = sliders.find((slider) => slider.id === "laborers");
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-amber-700/30">
@@ -190,6 +198,12 @@ export const LaborManagement: React.FC = () => {
         {hunterSlider && (
           <HunterSlider
             sliderData={hunterSlider}
+            onSliderChange={handleSliderChange}
+          />
+        )}
+        {laborerSlider && (
+          <LaborerSlider
+            sliderData={laborerSlider}
             onSliderChange={handleSliderChange}
           />
         )}

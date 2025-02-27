@@ -18,7 +18,7 @@ export type ImprovementType =
   | "none"
   | "farm"
   | "mine"
-  | "lumber_camp"
+  | "lumberCamp"
   | "settlement";
 
 export interface Improvement {
@@ -33,7 +33,7 @@ export type BuildingType =
   | "settlement";
 
 export type AgricultureBuildingType = "farm";
-export type IndustryBuildingType = "mine" | "lumber_camp";
+export type IndustryBuildingType = "mine" | "lumberCamp";
 export type SettlementBuildingType = "settlement";
 export type HousingBuildingType = "makeshiftHousing" | "hut";
 
@@ -61,6 +61,16 @@ export interface Buildings {
   industry: Record<IndustryBuildingType, IndustryBuilding> | {};
 }
 
+export interface BuildingQueue {
+  name: HousingBuildingType | AgricultureBuildingType | IndustryBuildingType;
+  type: keyof Buildings;
+  position: GridPosition;
+  level: number;
+  initialCost: number;
+  remainingCost: number;
+  accumulatedCost: number;
+}
+
 export interface LandTile {
   position: GridPosition;
   biome: BiomeType;
@@ -75,6 +85,12 @@ export interface LandTile {
   improvements: Improvement[];
 }
 
+export interface BuildingCosts {
+  housing: Record<HousingBuildingType, number>;
+  agriculture: Record<AgricultureBuildingType, number>;
+  industry: Record<IndustryBuildingType, number>;
+}
+
 export interface LandState {
   tiles: Record<string, LandTile>;
   viewportCenter: GridPosition;
@@ -85,4 +101,6 @@ export interface LandState {
   biomeGatherFoodProductionMultipliers: Record<BiomeType, number[]>;
   biomeHunterFoodProductionMultipliers: Record<BiomeType, number[]>;
   biomeFarmerFoodProductionMultipliers: Record<BiomeType, number[]>;
+  buildingCosts: BuildingCosts;
+  buildingQueue: BuildingQueue[];
 }

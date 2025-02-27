@@ -109,7 +109,6 @@ export const initialState: GameState = {
   farmerFoodProductionMultipliers: [],
   // HOUSING
   housingScore: 1,
-  // FOOD SECURITY
   // POPULATION
   populationGrowthBaseRates: [0.0012],
   populationGrowthMultipliers: [],
@@ -121,4 +120,7 @@ export const initialState: GameState = {
   fertilityAgeMin: 16,
   fertilityAgeMax: 48,
   foodSecurityScore: 1,
+  // OCCUPATIONS
+  laborerProductionBaseRates: [0.007],
+  laborerProductionMultipliers: [],
 };
