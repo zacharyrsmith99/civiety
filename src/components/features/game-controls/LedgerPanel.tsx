@@ -98,13 +98,15 @@ const LedgerPanel = () => {
     return "severe";
   };
 
-  const foodWarningLevel = getSecurityWarningLevel(foodSecurityScore || 1);
+  const effectiveFoodWarningLevel = isStarving
+    ? "severe"
+    : getSecurityWarningLevel(foodSecurityScore || 1);
   const housingWarningLevel = getSecurityWarningLevel(housingScore || 1);
 
   const combinedWarningLevel = ["none", "mild", "moderate", "severe"].reduce(
     (highest, current) => {
       if (
-        [foodWarningLevel, housingWarningLevel].includes(current) &&
+        [effectiveFoodWarningLevel, housingWarningLevel].includes(current) &&
         ["none", "mild", "moderate", "severe"].indexOf(current) >
           ["none", "mild", "moderate", "severe"].indexOf(highest)
       ) {
@@ -141,7 +143,6 @@ const LedgerPanel = () => {
     }
   };
 
-  // Get header style based on warning level
   const getHeaderClass = (warningLevel: string) => {
     switch (warningLevel) {
       case "mild":
@@ -155,11 +156,13 @@ const LedgerPanel = () => {
     }
   };
 
-  // Get warning icon based on warning types
   const getWarningIcon = () => {
-    if (foodWarningLevel !== "none" && housingWarningLevel !== "none") {
+    if (
+      effectiveFoodWarningLevel !== "none" &&
+      housingWarningLevel !== "none"
+    ) {
       return "⚠️";
-    } else if (foodWarningLevel !== "none") {
+    } else if (effectiveFoodWarningLevel !== "none") {
       return "🌾";
     } else if (housingWarningLevel !== "none") {
       return "🏠";
@@ -213,9 +216,9 @@ const LedgerPanel = () => {
               {/* Warning indicators */}
               {combinedWarningLevel !== "none" && (
                 <div className="flex items-center gap-1">
-                  {foodWarningLevel !== "none" && (
+                  {effectiveFoodWarningLevel !== "none" && (
                     <Tooltip
-                      content={`Food security is ${foodWarningLevel}. Your people may suffer from increased death rates.`}
+                      content={`Food security is ${effectiveFoodWarningLevel}. Your people may suffer from increased death rates.`}
                       position="bottom"
                       width="220px"
                     >
@@ -223,9 +226,9 @@ const LedgerPanel = () => {
                         className={`
                         text-xs p-1 rounded-full 
                         ${
-                          foodWarningLevel === "severe"
+                          effectiveFoodWarningLevel === "severe"
                             ? "text-rose-400"
-                            : foodWarningLevel === "moderate"
+                            : effectiveFoodWarningLevel === "moderate"
                               ? "text-orange-400"
                               : "text-amber-400"
                         }
@@ -397,11 +400,13 @@ const LedgerPanel = () => {
                     {combinedWarningLevel === "severe" ? "⚠️" : "⚠"}
                   </span>
                   <span>
-                    {foodWarningLevel !== "none" &&
+                    {effectiveFoodWarningLevel !== "none" &&
                     housingWarningLevel !== "none"
                       ? "Food and housing problems detected!"
-                      : foodWarningLevel !== "none"
-                        ? "Food shortage detected!"
+                      : effectiveFoodWarningLevel !== "none"
+                        ? isStarving
+                          ? "Your people are starving!"
+                          : "Food shortage detected!"
                         : "Housing shortage detected!"}
                   </span>
                 </div>
@@ -449,18 +454,8 @@ const LedgerPanel = () => {
               ))}
             </div>
 
-            {/* Starvation warning container with fixed height */}
             <div className="h-[42px] mt-3">
-              {isStarving && (
-                <div className="bg-rose-900/20 border border-rose-800/30 rounded-lg p-2">
-                  <div className="flex items-center gap-2 text-rose-400">
-                    <span>⚠️</span>
-                    <span className="text-xs font-medieval">
-                      Your people are starving!
-                    </span>
-                  </div>
-                </div>
-              )}
+              {/* Placeholder for layout stability */}
             </div>
           </div>
         </div>
