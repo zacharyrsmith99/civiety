@@ -18,6 +18,9 @@ export interface GameState {
   gathererFoodProductionMultipliers: number[];
   farmerFoodProductionBaseRates: number[];
   farmerFoodProductionMultipliers: number[];
+  foodSecurityScore: number;
+  // HOUSING
+  housingScore: number;
   // POPULATION
   populationGrowthBaseRates: number[];
   populationGrowthMultipliers: number[];

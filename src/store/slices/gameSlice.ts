@@ -45,6 +45,12 @@ const gameSlice = createSlice({
     setTickSpeed: (state, action: PayloadAction<number>) => {
       state.tickSpeed = action.payload;
     },
+    setHousingScore: (state, action: PayloadAction<number>) => {
+      state.housingScore = action.payload;
+    },
+    setFoodSecurityScore: (state, action: PayloadAction<number>) => {
+      state.foodSecurityScore = action.payload;
+    },
   },
 });
 
@@ -58,5 +64,7 @@ export const {
   resetGame,
   setTickRate,
   setTickSpeed,
+  setHousingScore,
+  setFoodSecurityScore,
 } = gameSlice.actions;
 export default gameSlice.reducer;

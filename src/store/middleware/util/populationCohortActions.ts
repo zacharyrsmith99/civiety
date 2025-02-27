@@ -37,6 +37,7 @@ export function simulateNaturalPopulationChange(
   cohorts: Record<string, ChildCohort | AdultCohort | ElderCohort>,
   tickRateMultiplier: number,
   starvationMultipliers: Record<string, number> = {},
+  housingDeathRateMultipliers: Record<string, number> = {},
 ): {
   newCohorts: Record<string, ChildCohort | AdultCohort | ElderCohort>;
   newTotal: number;
@@ -267,6 +268,8 @@ export function simulateBirths(state: RootState, tickRateMultiplier: number) {
     fertilityAgeMax,
     populationGrowthBaseRates,
     populationGrowthMultipliers,
+    housingScore,
+    foodSecurityScore,
   } = state.game;
   const fertileAdultWomenSize = state.populationCohorts.cohorts[
     "adults-female-citizen"
@@ -296,7 +299,6 @@ export function simulateBirths(state: RootState, tickRateMultiplier: number) {
     );
   }
 
-  // Calculate a fertility modifier based on food security
   let fertilityModifier = 1.0;
   const food = state.resources.food;
   const foodConsumption = state.resources.newFoodConsumption;
@@ -311,9 +313,6 @@ export function simulateBirths(state: RootState, tickRateMultiplier: number) {
     }
   }
 
-  const housingCapacity = getTotalHousingCapacity(state);
-  const totalPopulation = state.populationCohorts.total;
-  const housingScore = Math.min(1, housingCapacity / totalPopulation);
   if (housingScore < 1) {
     fertilityModifier *= housingScore * 0.5;
   }
@@ -350,21 +349,27 @@ const ageGroupVulnerability = {
   elders: 2.5,
 };
 
-export function calculateStarvationDeathRates(
-  state: RootState,
-): Record<string, number> {
+export function calculateStarvationDeathRates(state: RootState): {
+  starvationDeathRateMultipliers: Record<string, number>;
+  foodSecurityScore: number;
+} {
   const { food } = state.resources;
   const foodProduction = state.resources.foodProduction;
   const foodConsumption = state.resources.newFoodConsumption;
 
   if (foodConsumption <= 0) {
-    return Object.keys(state.populationCohorts.cohorts).reduce(
-      (acc, cohortId) => {
-        acc[cohortId] = 1.0;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
+    return {
+      starvationDeathRateMultipliers: Object.keys(
+        state.populationCohorts.cohorts,
+      ).reduce(
+        (acc, cohortId) => {
+          acc[cohortId] = 1.0;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
+      foodSecurityScore: 1,
+    };
   }
 
   const daysOfFoodRemaining = Math.max(0, food / foodConsumption);
@@ -379,7 +384,7 @@ export function calculateStarvationDeathRates(
     stockFactor * 0.5 + changeFactor * 0.3 + absoluteStarvationFactor * 0.2;
   foodSecurityScore = Math.max(0, Math.min(1, foodSecurityScore));
 
-  const deathRateMultipliers: Record<string, number> = {};
+  const starvationDeathRateMultipliers: Record<string, number> = {};
 
   Object.entries(state.populationCohorts.cohorts).forEach(
     ([cohortId, cohort]) => {
@@ -411,16 +416,17 @@ export function calculateStarvationDeathRates(
           multiplier = 1 + severityFactor;
         }
       }
-      deathRateMultipliers[cohortId] = multiplier;
+      starvationDeathRateMultipliers[cohortId] = multiplier;
     },
   );
 
-  return deathRateMultipliers;
+  return { starvationDeathRateMultipliers, foodSecurityScore };
 }
 
-export function calculateLackOfHousingDeathRates(
-  state: RootState,
-): Record<string, number> {
+export function calculateLackOfHousingDeathRates(state: RootState): {
+  housingDeathRateMultipliers: Record<string, number>;
+  housingScore: number;
+} {
   const totalHousingCapacity = getTotalHousingCapacity(state);
   const totalPopulation = state.populationCohorts.total;
   const populationGrowthRate = 0;
@@ -450,5 +456,5 @@ export function calculateLackOfHousingDeathRates(
     },
   );
 
-  return housingDeathRateMultipliers;
+  return { housingDeathRateMultipliers, housingScore };
 }

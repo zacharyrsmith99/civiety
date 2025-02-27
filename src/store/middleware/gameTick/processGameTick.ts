@@ -3,12 +3,15 @@ import { Dispatch } from "@reduxjs/toolkit";
 import { RootState } from "@/store/types";
 import { MiddlewareAPI, UnknownAction } from "@reduxjs/toolkit";
 import {
+  setFoodSecurityScore,
+  setHousingScore,
   tick,
   updateAccumulatedChildPopulationGrowth,
 } from "@/store/slices/gameSlice";
 import { updateFood } from "@/store/slices/resourcesSlice";
 import { advanceTime } from "@/store/slices/gameSlice";
 import {
+  calculateLackOfHousingDeathRates,
   calculateStarvationDeathRates,
   simulateBirths,
   simulateNaturalPopulationChange,
@@ -65,12 +68,18 @@ export function processGameTick(
 
   state = store.getState();
 
-  const starvationMultipliers = calculateStarvationDeathRates(state);
+  const { starvationDeathRateMultipliers, foodSecurityScore } =
+    calculateStarvationDeathRates(state);
+  store.dispatch(setFoodSecurityScore(foodSecurityScore));
+  const { housingDeathRateMultipliers, housingScore } =
+    calculateLackOfHousingDeathRates(state);
+  store.dispatch(setHousingScore(housingScore));
 
   const { newCohorts, newTotal } = simulateNaturalPopulationChange(
     state.populationCohorts.cohorts,
     tickRateMultiplier,
-    starvationMultipliers,
+    starvationDeathRateMultipliers,
+    housingDeathRateMultipliers,
   );
   store.dispatch(updateCohorts({ cohorts: newCohorts, total: newTotal }));
   state = store.getState();

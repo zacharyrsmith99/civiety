@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 interface TooltipProps {
   content: React.ReactNode;
@@ -12,7 +13,6 @@ export const Tooltip: React.FC<TooltipProps> = ({
   content,
   children,
   position = "top",
-  width = "max-content",
   delay = 0,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -33,15 +33,14 @@ export const Tooltip: React.FC<TooltipProps> = ({
 
   // Position the tooltip to stay within viewport
   useEffect(() => {
-    if (isVisible && tooltipRef.current && triggerRef.current) {
-      const tooltipElement = tooltipRef.current;
+    if (isVisible && triggerRef.current) {
       const triggerRect = triggerRef.current.getBoundingClientRect();
 
       // Wait for tooltip to render with content
       setTimeout(() => {
-        if (!tooltipElement) return;
+        if (!tooltipRef.current) return;
 
-        const tooltipRect = tooltipElement.getBoundingClientRect();
+        const tooltipRect = tooltipRef.current.getBoundingClientRect();
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
 
@@ -67,72 +66,56 @@ export const Tooltip: React.FC<TooltipProps> = ({
           }
         }
 
-        // Calculate final coordinates
-        let left, top, transform;
+        // Calculate absolute position in the viewport
+        let left, top;
 
         if (finalPosition === "top") {
-          top = -tooltipRect.height - 8;
-          left = (triggerRect.width - tooltipRect.width) / 2;
-          transform = "";
+          left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2;
+          top = triggerRect.top - tooltipRect.height - 8;
 
           // Check left and right edges
-          if (triggerRect.left + left < 0) {
-            left = -triggerRect.left + 8;
-          } else if (
-            triggerRect.left + left + tooltipRect.width >
-            viewportWidth
-          ) {
-            left = viewportWidth - tooltipRect.width - triggerRect.left - 8;
+          if (left < 8) {
+            left = 8;
+          } else if (left + tooltipRect.width > viewportWidth - 8) {
+            left = viewportWidth - tooltipRect.width - 8;
           }
         } else if (finalPosition === "bottom") {
-          top = triggerRect.height + 8;
-          left = (triggerRect.width - tooltipRect.width) / 2;
-          transform = "";
+          left = triggerRect.left + (triggerRect.width - tooltipRect.width) / 2;
+          top = triggerRect.bottom + 8;
 
           // Check left and right edges
-          if (triggerRect.left + left < 0) {
-            left = -triggerRect.left + 8;
-          } else if (
-            triggerRect.left + left + tooltipRect.width >
-            viewportWidth
-          ) {
-            left = viewportWidth - tooltipRect.width - triggerRect.left - 8;
+          if (left < 8) {
+            left = 8;
+          } else if (left + tooltipRect.width > viewportWidth - 8) {
+            left = viewportWidth - tooltipRect.width - 8;
           }
         } else if (finalPosition === "left") {
-          top = (triggerRect.height - tooltipRect.height) / 2;
-          left = -tooltipRect.width - 8;
-          transform = "";
+          left = triggerRect.left - tooltipRect.width - 8;
+          top = triggerRect.top + (triggerRect.height - tooltipRect.height) / 2;
 
           // Check top and bottom edges
-          if (triggerRect.top + top < 0) {
-            top = -triggerRect.top + 8;
-          } else if (
-            triggerRect.top + top + tooltipRect.height >
-            viewportHeight
-          ) {
-            top = viewportHeight - tooltipRect.height - triggerRect.top - 8;
+          if (top < 8) {
+            top = 8;
+          } else if (top + tooltipRect.height > viewportHeight - 8) {
+            top = viewportHeight - tooltipRect.height - 8;
           }
         } else if (finalPosition === "right") {
-          top = (triggerRect.height - tooltipRect.height) / 2;
-          left = triggerRect.width + 8;
-          transform = "";
+          left = triggerRect.right + 8;
+          top = triggerRect.top + (triggerRect.height - tooltipRect.height) / 2;
 
           // Check top and bottom edges
-          if (triggerRect.top + top < 0) {
-            top = -triggerRect.top + 8;
-          } else if (
-            triggerRect.top + top + tooltipRect.height >
-            viewportHeight
-          ) {
-            top = viewportHeight - tooltipRect.height - triggerRect.top - 8;
+          if (top < 8) {
+            top = 8;
+          } else if (top + tooltipRect.height > viewportHeight - 8) {
+            top = viewportHeight - tooltipRect.height - 8;
           }
         }
 
         styles = {
-          position: "absolute",
+          position: "fixed", // Changed from absolute to fixed for viewport positioning
           left: `${left}px`,
           top: `${top}px`,
-          transform,
+          zIndex: 9999,
         };
 
         setTooltipStyles(styles);
@@ -154,38 +137,40 @@ export const Tooltip: React.FC<TooltipProps> = ({
         {children}
       </div>
 
-      {isVisible && (
-        <div ref={tooltipRef} style={tooltipStyles} className="z-50 w-max">
-          <div
-            className="
-              p-2.5 
-              bg-gradient-to-b from-amber-900 to-amber-950
-              text-amber-100 text-xs font-medieval
-              rounded border border-amber-600/70
-              shadow-lg
-              animate-fadeIn
-              whitespace-normal
-              min-w-[120px]
-              max-w-[250px]
-              text-center
-            "
-          >
-            <div className="relative z-10">{content}</div>
+      {isVisible &&
+        createPortal(
+          <div ref={tooltipRef} style={tooltipStyles} className="z-50 w-max">
+            <div
+              className="
+                p-2.5 
+                bg-gradient-to-b from-amber-900 to-amber-950
+                text-amber-100 text-xs font-medieval
+                rounded border border-amber-600/70
+                shadow-lg
+                animate-fadeIn
+                whitespace-normal
+                min-w-[120px]
+                max-w-[250px]
+                text-center
+              "
+            >
+              <div className="relative z-10">{content}</div>
 
-            {/* Decorative elements */}
-            <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-[url('/assets/parchment-texture.png')] mix-blend-overlay rounded"></div>
-            <div className="absolute top-1 right-1 text-amber-500/30 text-[8px]">
-              ❧
-            </div>
-            <div className="absolute bottom-1 left-1 text-amber-500/30 text-[8px]">
-              ❧
-            </div>
+              {/* Decorative elements */}
+              <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-[url('/assets/parchment-texture.png')] mix-blend-overlay rounded"></div>
+              <div className="absolute top-1 right-1 text-amber-500/30 text-[8px]">
+                ❧
+              </div>
+              <div className="absolute bottom-1 left-1 text-amber-500/30 text-[8px]">
+                ❧
+              </div>
 
-            {/* Inner glow effect */}
-            <div className="absolute inset-0 rounded pointer-events-none bg-gradient-to-r from-amber-500/5 via-amber-400/10 to-amber-500/5"></div>
-          </div>
-        </div>
-      )}
+              {/* Inner glow effect */}
+              <div className="absolute inset-0 rounded pointer-events-none bg-gradient-to-r from-amber-500/5 via-amber-400/10 to-amber-500/5"></div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };
