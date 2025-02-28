@@ -150,12 +150,11 @@ export function reallocateOccupations(state: RootState) {
 export function calculateLaborerProduction(state: RootState) {
   const { laborerProductionBaseRates, laborerProductionMultipliers } =
     state.game;
-  const laborers = state.occupations.size.laborers;
-  const laborerProduction = laborerProductionBaseRates.reduce(
-    (acc, rate, index) => {
-      return acc + rate * (1 + laborerProductionMultipliers[index]);
-    },
-    0,
-  );
-  return laborerProduction * laborers;
+  const totalLaborerProductionMultiplier =
+    laborerProductionMultipliers.reduce((acc, rate) => acc + rate, 0) + 1;
+  const laborers = state.occupations.size.laborers || 0;
+  const laborerProduction = laborerProductionBaseRates.reduce((acc, rate) => {
+    return acc + rate;
+  }, 0);
+  return laborerProduction * totalLaborerProductionMultiplier * laborers;
 }
