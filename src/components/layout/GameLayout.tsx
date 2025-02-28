@@ -45,7 +45,10 @@ export const GameLayout = () => {
           {/* Settlement overview container */}
           <div className="w-[60%] min-h-0 relative">
             <div className="absolute -top-2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-600/20 to-transparent" />
-            <SettlementOverview selectedPosition={selectedPosition} />
+            <SettlementOverview
+              selectedPosition={selectedPosition}
+              onTileSelect={handleTileSelect}
+            />
           </div>
 
           {/* Map section with logo */}

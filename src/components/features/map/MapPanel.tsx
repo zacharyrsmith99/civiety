@@ -43,17 +43,6 @@ const MapPanel: React.FC<MapPanelProps> = ({
     onTileSelect(null);
   };
 
-  const handleBuildImprovement = (improvementType: string) => {
-    if (!selectedPosition) return;
-
-    dispatch(
-      addImprovement({
-        position: selectedPosition,
-        improvement: { type: improvementType as any, level: 1 },
-      }),
-    );
-  };
-
   return (
     <div
       className={`flex flex-col h-full bg-gradient-to-br from-slate-900 to-slate-950 rounded-xl border-2 border-amber-700/30 ${className}`}

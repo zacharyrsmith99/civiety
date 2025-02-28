@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../types";
-import { BuildingQueue, GridPosition, Improvement, LandTile } from "./types/land";
+import {
+  BuildingQueue,
+  GridPosition,
+  Improvement,
+  LandTile,
+} from "./types/land";
 import { positionKey } from "./util/initialLandState";
 import { initialState } from "./util/initialLandState";
 
@@ -17,6 +22,26 @@ export const landSlice = createSlice({
     ) => {
       state.tiles = action.payload.tiles;
       state.buildingQueue = action.payload.buildingQueue;
+    },
+    updateTilePermissions: (
+      state,
+      action: PayloadAction<{
+        position: GridPosition;
+        permissions: {
+          allowHousing: boolean;
+          allowAgriculture: boolean;
+          allowIndustry: boolean;
+        };
+      }>,
+    ) => {
+      const { position, permissions } = action.payload;
+      const key = positionKey(position);
+
+      if (state.tiles[key]) {
+        state.tiles[key].allowHousing = permissions.allowHousing;
+        state.tiles[key].allowAgriculture = permissions.allowAgriculture;
+        state.tiles[key].allowIndustry = permissions.allowIndustry;
+      }
     },
     addImprovement: (
       state,
@@ -170,6 +195,7 @@ export const {
   setViewport,
   updateBuildings,
   addBuildingToQueue,
+  updateTilePermissions,
 } = landSlice.actions;
 
 export const selectAllTiles = (state: RootState) => state.land.tiles;
