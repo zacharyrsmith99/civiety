@@ -344,7 +344,8 @@ export function calculateStarvationDeathRates(state: RootState): {
   starvationDeathRateMultipliers: Record<string, number>;
   foodSecurityScore: number;
 } {
-  const { food } = state.resources;
+  const { stores } = state.resources;
+  const { food } = stores;
   const foodProduction = state.resources.foodProduction;
   const foodConsumption = state.resources.newFoodConsumption;
 

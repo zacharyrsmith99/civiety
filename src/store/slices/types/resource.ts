@@ -1,7 +1,14 @@
 import { FoodConsumptionByCohort } from "@/store/middleware/util/resources/foodActions";
 
-interface ResourcesState {
+export interface ResourceStores {
   food: number;
+  hides: number;
+  stone: number;
+  wood: number;
+}
+
+export interface ResourcesState {
+  stores: ResourceStores;
   foodProduction: number;
   farmFoodProduction: number;
   gatherFoodProduction: number;
@@ -9,13 +16,3 @@ interface ResourcesState {
   newFoodConsumption: number;
   newFoodConsumptionByCohort: FoodConsumptionByCohort[];
 }
-
-export const initialState: ResourcesState = {
-  food: 100,
-  foodProduction: 0,
-  farmFoodProduction: 0,
-  gatherFoodProduction: 0,
-  hunterFoodProduction: 0,
-  newFoodConsumption: 0,
-  newFoodConsumptionByCohort: [],
-};

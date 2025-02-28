@@ -60,13 +60,13 @@ export function processGameTick(
   const { foodConsumption, foodConsumptionByCohort } =
     calculateFoodConsumption(state);
   const newFood = calculateNewFoodStock(
-    state.resources.food,
+    state.resources.stores.food,
     foodProduction,
     foodConsumption,
   );
   store.dispatch(
     updateFood({
-      newFood: newFood - state.resources.food,
+      newFood: newFood - state.resources.stores.food,
       newFoodProduction: foodProduction,
       newFarmFoodProduction: farmFoodProduction,
       newGatherFoodProduction: gatherFoodProduction,

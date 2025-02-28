@@ -4,7 +4,7 @@ import TimeDisplay from "./TimeDisplay";
 import { Tooltip } from "@/components/ui/Tooltip";
 
 const LedgerPanel = () => {
-  const food = useAppSelector((state) => state.resources.food);
+  const stores = useAppSelector((state) => state.resources.stores);
   const totalPopulation = useAppSelector(
     (state) => state.populationCohorts.total,
   );
@@ -15,7 +15,7 @@ const LedgerPanel = () => {
     (state) => state.resources.newFoodConsumption,
   );
   const netFoodChangePerSecond = foodProduction - baseConsumption;
-  const isStarving = food === 0;
+  const isStarving = stores.food === 0;
 
   const foodSecurityScore = useAppSelector(
     (state) => state.game.foodSecurityScore,
@@ -84,10 +84,15 @@ const LedgerPanel = () => {
 
   const resources = [
     { name: "Gold", icon: "💰", amount: 0, change: 0 },
-    { name: "Food", icon: "🌾", amount: food, change: netFoodChangePerSecond },
-    { name: "Stone", icon: "🪨", amount: 0, change: 0 },
-    { name: "Wood", icon: "🪵", amount: 0, change: 0 },
-    { name: "Hides", icon: "🦊", amount: 0, change: 0 },
+    {
+      name: "Food",
+      icon: "🌾",
+      amount: stores.food,
+      change: netFoodChangePerSecond,
+    },
+    { name: "Stone", icon: "🪨", amount: stores.stone, change: 0 },
+    { name: "Wood", icon: "🪵", amount: stores.wood, change: 0 },
+    { name: "Hides", icon: "🦊", amount: stores.hides, change: 0 },
   ];
 
   // Determine warning levels based on security scores

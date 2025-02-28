@@ -6,6 +6,7 @@ import {
   IndustryBuildingType,
   LandTile,
 } from "@/store/slices/types/land";
+import { ResourceStores } from "@/store/slices/types/resource";
 import { RootState } from "@/store/types";
 
 function getBuildingBaseCost(
@@ -30,6 +31,7 @@ function getBuildingBaseCost(
 function processBuildingQueueItem(
   building: BuildingQueue,
   buildingInitialCosts: BuildingInitialCosts,
+  resourceStores: ResourceStores,
   laborProduction: number,
 ) {
   const { name, remainingCost, accumulatedLabor, level } = building;
