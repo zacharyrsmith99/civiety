@@ -64,7 +64,7 @@ export const initialState: LandState = {
   viewportZoom: 1,
   gridSize: { width: 7, height: 7 },
   baseProductionResourcesWorkerCapacity: 1000,
-  buildingCosts: {
+  buildingInitialCosts: {
     housing: {
       makeshiftHousing: 1,
       hut: 2,

@@ -1,6 +1,6 @@
 import {
   AgricultureBuildingType,
-  BuildingCosts,
+  BuildingInitialCosts,
   BuildingQueue,
   HousingBuildingType,
   IndustryBuildingType,
@@ -13,15 +13,15 @@ function getBuildingBaseCost(
     | HousingBuildingType
     | AgricultureBuildingType
     | IndustryBuildingType,
-  buildingCosts: BuildingCosts,
+  buildingInitialCosts: BuildingInitialCosts,
 ) {
   switch (buildingName) {
     case "makeshiftHousing":
-      return buildingCosts.housing.makeshiftHousing;
+      return buildingInitialCosts.housing.makeshiftHousing;
     case "hut":
-      return buildingCosts.housing.hut;
+      return buildingInitialCosts.housing.hut;
     case "farm":
-      return buildingCosts.agriculture.farm;
+      return buildingInitialCosts.agriculture.farm;
     default:
       return new Error(`Building type ${buildingName} not found`);
   }
@@ -29,11 +29,11 @@ function getBuildingBaseCost(
 
 function processBuildingQueueItem(
   building: BuildingQueue,
-  buildingCosts: BuildingCosts,
+  buildingInitialCosts: BuildingInitialCosts,
   laborProduction: number,
 ) {
   const { name, remainingCost, accumulatedCost, level } = building;
-  const baseCost = getBuildingBaseCost(name, buildingCosts) as number;
+  const baseCost = getBuildingBaseCost(name, buildingInitialCosts) as number;
 
   let newLaborProduction = laborProduction;
   let newRemainingCost = remainingCost;
@@ -120,7 +120,7 @@ export function processBuildingQueue(
   state: RootState,
   laborProduction: number,
 ) {
-  const { buildingQueue, buildingCosts, buildingInfo } = state.land;
+  const { buildingQueue, buildingInitialCosts, buildingInfo } = state.land;
 
   const { tiles } = state.land;
 
@@ -167,7 +167,7 @@ export function processBuildingQueue(
     const newBuilding = { ...building };
     const result = processBuildingQueueItem(
       building,
-      buildingCosts,
+      buildingInitialCosts,
       currentLaborProduction,
     );
     if (!result) {

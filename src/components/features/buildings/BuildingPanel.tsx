@@ -19,7 +19,9 @@ export const BuildingPanel: React.FC<BuildingPanelProps> = ({
   position,
 }) => {
   const dispatch = useAppDispatch();
-  const buildingCosts = useAppSelector((state) => state.land.buildingCosts);
+  const buildingInitialCosts = useAppSelector(
+    (state) => state.land.buildingInitialCosts,
+  );
   const buildingQueue = useAppSelector((state) => state.land.buildingQueue);
   const [selectedQuantity, setSelectedQuantity] = useState<number>(1);
 
@@ -60,7 +62,7 @@ export const BuildingPanel: React.FC<BuildingPanelProps> = ({
 
   const handleAddBuilding = () => {
     const buildingName = "makeshiftHousing" as HousingBuildingType;
-    const unitCost = buildingCosts.housing[buildingName];
+    const unitCost = buildingInitialCosts.housing[buildingName];
     const totalCost = unitCost * selectedQuantity;
 
     dispatch(
@@ -151,7 +153,7 @@ export const BuildingPanel: React.FC<BuildingPanelProps> = ({
                     <div className="flex justify-between items-center mt-1">
                       <div className="text-xs text-amber-300">
                         Cost:{" "}
-                        {buildingCosts.housing.makeshiftHousing *
+                        {buildingInitialCosts.housing.makeshiftHousing *
                           selectedQuantity}{" "}
                         labor
                       </div>

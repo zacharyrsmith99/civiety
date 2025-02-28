@@ -83,7 +83,7 @@ export interface LandTile {
   improvements: Improvement[];
 }
 
-export interface BuildingCosts {
+export interface BuildingInitialCosts {
   housing: Record<HousingBuildingType, number>;
   agriculture: Record<AgricultureBuildingType, number>;
   industry: Record<IndustryBuildingType, number>;
@@ -109,7 +109,7 @@ export interface LandState {
   biomeGatherFoodProductionMultipliers: Record<BiomeType, number[]>;
   biomeHunterFoodProductionMultipliers: Record<BiomeType, number[]>;
   biomeFarmerFoodProductionMultipliers: Record<BiomeType, number[]>;
-  buildingCosts: BuildingCosts;
+  buildingInitialCosts: BuildingInitialCosts;
   buildingQueue: BuildingQueue[];
   buildingInfo: BuildingInfo;
 }
