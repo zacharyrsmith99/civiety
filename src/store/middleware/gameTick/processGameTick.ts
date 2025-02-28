@@ -95,7 +95,10 @@ export function processGameTick(
   state = store.getState();
 
   if (state.land.buildingQueue.length > 0) {
-    const laborerProduction = calculateLaborerProduction(state);
+    const laborerProduction = calculateLaborerProduction(
+      state,
+      tickRateMultiplier,
+    );
     const { newTiles, newBuildingQueue } = processBuildingQueue(
       state,
       laborerProduction,

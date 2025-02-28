@@ -147,7 +147,10 @@ export function reallocateOccupations(state: RootState) {
   return { size, remainingPopulation };
 }
 
-export function calculateLaborerProduction(state: RootState) {
+export function calculateLaborerProduction(
+  state: RootState,
+  tickRateMultiplier: number,
+) {
   const { laborerProductionBaseRates, laborerProductionMultipliers } =
     state.game;
   const totalLaborerProductionMultiplier =
@@ -156,5 +159,10 @@ export function calculateLaborerProduction(state: RootState) {
   const laborerProduction = laborerProductionBaseRates.reduce((acc, rate) => {
     return acc + rate;
   }, 0);
-  return laborerProduction * totalLaborerProductionMultiplier * laborers;
+  return (
+    laborerProduction *
+    totalLaborerProductionMultiplier *
+    laborers *
+    tickRateMultiplier
+  );
 }
