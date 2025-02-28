@@ -47,7 +47,9 @@ export const TileDetails: React.FC<TileDetailsProps> = ({
     }
   }, [selectedTile]);
 
-  const handleTogglePermission = (permission: keyof typeof pendingChanges) => {
+  const handleTogglePermission = (
+    permission: "allowHousing" | "allowAgriculture" | "allowIndustry",
+  ) => {
     if (pendingChanges) {
       setPendingChanges({
         ...pendingChanges,
@@ -219,7 +221,9 @@ export const TileDetails: React.FC<TileDetailsProps> = ({
             {Object.keys(selectedTile.buildings.housing).length > 0 && (
               <div className="mb-4 bg-slate-800/20 rounded-lg p-3 border border-amber-700/30 shadow-md">
                 <div className="flex justify-between items-center mb-2 pb-2 border-b border-amber-900/30">
-                  <h4 className="text-amber-300 font-medieval text-lg">Housing</h4>
+                  <h4 className="text-amber-300 font-medieval text-lg">
+                    Housing
+                  </h4>
                   <span className="text-sm bg-amber-900/60 px-3 py-1 rounded-lg border border-amber-500/30 text-amber-100 font-medium shadow-sm">
                     Total Capacity: {totalHousingCapacity}
                   </span>
@@ -239,9 +243,13 @@ export const TileDetails: React.FC<TileDetailsProps> = ({
                               className="w-10 h-10 mr-3"
                             />
                           ) : (
-                            <span className="w-10 h-10 flex items-center justify-center mr-3">🏠</span>
+                            <span className="w-10 h-10 flex items-center justify-center mr-3">
+                              🏠
+                            </span>
                           )}
-                          <span className="text-amber-100 font-medium">{toTitleCase(building)}</span>
+                          <span className="text-amber-100 font-medium">
+                            {toTitleCase(building)}
+                          </span>
                         </div>
                         <div className="flex items-center">
                           <span className="text-sm bg-amber-800 px-3 py-1 rounded-lg border border-amber-500/30 mr-2 text-amber-100 font-medium shadow-sm">
@@ -274,8 +282,12 @@ export const TileDetails: React.FC<TileDetailsProps> = ({
                         className="bg-slate-700/40 p-3 rounded-lg border border-amber-700/30 flex justify-between items-center hover:bg-slate-700/50 transition-colors"
                       >
                         <div className="flex items-center">
-                          <span className="w-10 h-10 flex items-center justify-center mr-3">🌾</span>
-                          <span className="text-amber-100 font-medium">{toTitleCase(building)}</span>
+                          <span className="w-10 h-10 flex items-center justify-center mr-3">
+                            🌾
+                          </span>
+                          <span className="text-amber-100 font-medium">
+                            {toTitleCase(building)}
+                          </span>
                         </div>
                         <div className="flex items-center">
                           <span className="text-sm bg-amber-800 px-3 py-1 rounded-lg border border-amber-500/30 text-amber-100 font-medium shadow-sm">
@@ -293,7 +305,9 @@ export const TileDetails: React.FC<TileDetailsProps> = ({
             {Object.keys(selectedTile.buildings.industry).length > 0 && (
               <div className="mb-4 bg-slate-800/20 rounded-lg p-3 border border-amber-700/30 shadow-md">
                 <div className="flex justify-between items-center mb-2 pb-2 border-b border-amber-900/30">
-                  <h4 className="text-amber-300 font-medieval text-lg">Industry</h4>
+                  <h4 className="text-amber-300 font-medieval text-lg">
+                    Industry
+                  </h4>
                 </div>
                 <div className="space-y-2">
                   {Object.entries(selectedTile.buildings.industry).map(
@@ -303,8 +317,12 @@ export const TileDetails: React.FC<TileDetailsProps> = ({
                         className="bg-slate-700/40 p-3 rounded-lg border border-amber-700/30 flex justify-between items-center hover:bg-slate-700/50 transition-colors"
                       >
                         <div className="flex items-center">
-                          <span className="w-10 h-10 flex items-center justify-center mr-3">⚒️</span>
-                          <span className="text-amber-100 font-medium">{toTitleCase(building)}</span>
+                          <span className="w-10 h-10 flex items-center justify-center mr-3">
+                            ⚒️
+                          </span>
+                          <span className="text-amber-100 font-medium">
+                            {toTitleCase(building)}
+                          </span>
                         </div>
                         <div className="flex items-center">
                           <span className="text-sm bg-amber-800 px-3 py-1 rounded-lg border border-amber-500/30 text-amber-100 font-medium shadow-sm">
