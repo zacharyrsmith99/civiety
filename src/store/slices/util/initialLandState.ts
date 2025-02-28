@@ -51,8 +51,6 @@ const generateInitialMap = (): Record<string, LandTile> => {
     >
   )["makeshiftHousing"] = {
     level: 1000,
-    spaceUnits: 1,
-    capacity: 3,
   };
 
   tiles["0,0"].usedSpaceUnits = 1000;
@@ -77,6 +75,12 @@ export const initialState: LandState = {
     industry: {
       mine: 50,
       lumberCamp: 10,
+    },
+  },
+  buildingInfo: {
+    housing: {
+      makeshiftHousing: { capacity: 3, spaceUnits: 1 },
+      hut: { capacity: 5, spaceUnits: 1 },
     },
   },
   buildingQueue: [],

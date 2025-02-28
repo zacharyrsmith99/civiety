@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { LandTile, GridPosition } from "@/store/slices/types/land";
+import {
+  LandTile,
+  GridPosition,
+  HousingBuildingType,
+} from "@/store/slices/types/land";
 import { BuildingPanel } from "../buildings/BuildingPanel";
 import { scrollbarStyles } from "@/config/scrollbarStyles";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { updateTilePermissions } from "@/store/slices/landSlice";
 
 type TileSubTab = "overview" | "build" | "improve";
@@ -31,6 +35,8 @@ export const TileDetails: React.FC<TileDetailsProps> = ({
   } | null>(null);
 
   const dispatch = useAppDispatch();
+
+  const { buildingInfo } = useAppSelector((state) => state.land);
 
   useEffect(() => {
     setActiveSubTab("overview");
@@ -94,8 +100,9 @@ export const TileDetails: React.FC<TileDetailsProps> = ({
   }
 
   let totalHousingCapacity = 0;
-  Object.values(selectedTile.buildings.housing).forEach((data) => {
-    totalHousingCapacity += data.level * data.capacity;
+  Object.entries(selectedTile.buildings.housing).forEach(([key, value]) => {
+    totalHousingCapacity +=
+      value.level * buildingInfo.housing[key as HousingBuildingType].capacity;
   });
 
   return (
@@ -256,7 +263,11 @@ export const TileDetails: React.FC<TileDetailsProps> = ({
                             Level {data.level}
                           </span>
                           <span className="text-amber-300 text-sm font-medium">
-                            Capacity: {data.level * data.capacity}
+                            Capacity:{" "}
+                            {data.level *
+                              buildingInfo.housing[
+                                building as HousingBuildingType
+                              ].capacity}
                           </span>
                         </div>
                       </div>

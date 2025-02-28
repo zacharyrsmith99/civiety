@@ -39,8 +39,6 @@ export type HousingBuildingType = "makeshiftHousing" | "hut";
 
 export interface HousingBuilding {
   level: number;
-  spaceUnits: number;
-  capacity: number;
 }
 
 export interface AgricultureBuilding {
@@ -91,6 +89,16 @@ export interface BuildingCosts {
   industry: Record<IndustryBuildingType, number>;
 }
 
+export interface BuildingInfo {
+  housing: Record<
+    HousingBuildingType,
+    {
+      capacity: number;
+      spaceUnits: number;
+    }
+  >;
+}
+
 export interface LandState {
   tiles: Record<string, LandTile>;
   viewportCenter: GridPosition;
@@ -103,4 +111,5 @@ export interface LandState {
   biomeFarmerFoodProductionMultipliers: Record<BiomeType, number[]>;
   buildingCosts: BuildingCosts;
   buildingQueue: BuildingQueue[];
+  buildingInfo: BuildingInfo;
 }

@@ -8,12 +8,6 @@ import {
 } from "@/store/slices/types/land";
 import { RootState } from "@/store/types";
 
-// TODO: add to redux state
-const housingBuildingCapacityAndSpaceUnits = {
-  makeshiftHousing: { capacity: 3, spaceUnits: 1 },
-  hut: { capacity: 5, spaceUnits: 1 },
-};
-
 function getBuildingBaseCost(
   buildingName:
     | HousingBuildingType
@@ -122,13 +116,11 @@ function processBuildingQueueItem(
   };
 }
 
-// TODO: fix for other building types
-
 export function processBuildingQueue(
   state: RootState,
   laborProduction: number,
 ) {
-  const { buildingQueue, buildingCosts } = state.land;
+  const { buildingQueue, buildingCosts, buildingInfo } = state.land;
 
   const { tiles } = state.land;
 
@@ -212,15 +204,23 @@ export function processBuildingQueue(
       if (buildings[name]) {
         buildings[name].level += newBuildings;
       } else {
-        buildings[name] = {
-          level: newBuildings,
-          capacity:
-            housingBuildingCapacityAndSpaceUnits[name as HousingBuildingType]
-              .capacity,
-          spaceUnits:
-            housingBuildingCapacityAndSpaceUnits[name as HousingBuildingType]
-              .spaceUnits,
-        };
+        switch (type) {
+          case "housing":
+            buildings[name] = {
+              level: newBuildings,
+              capacity:
+                buildingInfo.housing[name as HousingBuildingType].capacity,
+              spaceUnits:
+                buildingInfo.housing[name as HousingBuildingType].spaceUnits,
+            };
+            break;
+          case "agriculture":
+            throw new Error("Agriculture buildings not implemented");
+          case "industry":
+            throw new Error("Industry buildings not implemented");
+          default:
+            throw new Error(`Building type ${type} not implemented`);
+        }
       }
     }
   }
