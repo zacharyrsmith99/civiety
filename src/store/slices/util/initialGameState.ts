@@ -123,4 +123,6 @@ export const initialState: GameState = {
   // OCCUPATIONS
   laborerProductionBaseRates: [0.007],
   laborerProductionMultipliers: [],
+  hunterHideBaseProductionRates: [0.0033],
+  hunterHideProductionMultipliers: [],
 };

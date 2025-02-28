@@ -66,15 +66,64 @@ export const initialState: LandState = {
   baseProductionResourcesWorkerCapacity: 1000,
   buildingInitialCosts: {
     housing: {
-      makeshiftHousing: 1,
-      hut: 2,
+      makeshiftHousing: {
+        labor: 1,
+        hide: 2.0,
+        food: 0.0,
+        wood: 0.0,
+        stone: 0.0,
+      },
+      hut: {
+        labor: 2,
+        hide: 4.0,
+        food: 0.0,
+        wood: 0.0,
+        stone: 0.0,
+      },
     },
     agriculture: {
-      farm: 4,
+      farm: {
+        labor: 4,
+        hide: 0.0,
+        food: 0.0,
+        wood: 0.0,
+        stone: 0.0,
+      },
     },
     industry: {
-      mine: 50,
-      lumberCamp: 10,
+      mine: {
+        labor: 50,
+        hide: 0.0,
+        food: 0.0,
+        wood: 0.0,
+        stone: 0.0,
+      },
+      lumberCamp: {
+        labor: 10,
+        hide: 0.0,
+        food: 0.0,
+        wood: 0.0,
+        stone: 0.0,
+      },
+    },
+  },
+  buildingUpkeepCosts: {
+    housing: {
+      makeshiftHousing: {
+        labor: 0.00028,
+        hide: 0.0002,
+        food: 0.0,
+        wood: 0.0,
+        stone: 0.0,
+      },
+      hut: { labor: 0.00056, hide: 0.0004, food: 0.0, wood: 0.0, stone: 0.0 },
+    },
+    agriculture: {
+      farm: { labor: 0.0, hide: 0.0, food: 0.0, wood: 0.0, stone: 0.0 },
+    },
+    industry: {
+      mine: { labor: 0.0, hide: 0.0, food: 0.0, wood: 0.0, stone: 0.0 },
+      lumberCamp: { labor: 0.0, hide: 0.0, food: 0.0, wood: 0.0, stone: 0.0 },
     },
   },
   buildingInfo: {

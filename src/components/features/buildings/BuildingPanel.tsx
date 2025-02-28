@@ -62,7 +62,7 @@ export const BuildingPanel: React.FC<BuildingPanelProps> = ({
 
   const handleAddBuilding = () => {
     const buildingName = "makeshiftHousing" as HousingBuildingType;
-    const unitCost = buildingInitialCosts.housing[buildingName];
+    const unitCost = buildingInitialCosts.housing[buildingName].labor;
     const totalCost = unitCost * selectedQuantity;
 
     dispatch(
@@ -153,7 +153,7 @@ export const BuildingPanel: React.FC<BuildingPanelProps> = ({
                     <div className="flex justify-between items-center mt-1">
                       <div className="text-xs text-amber-300">
                         Cost:{" "}
-                        {buildingInitialCosts.housing.makeshiftHousing *
+                        {buildingInitialCosts.housing.makeshiftHousing.labor *
                           selectedQuantity}{" "}
                         labor
                       </div>

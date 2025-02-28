@@ -23,7 +23,7 @@ function getBuildingBaseCost(
     case "farm":
       return buildingInitialCosts.agriculture.farm;
     default:
-      return new Error(`Building type ${buildingName} not found`);
+      throw new Error(`Building type ${buildingName} not found`);
   }
 }
 
@@ -33,7 +33,8 @@ function processBuildingQueueItem(
   laborProduction: number,
 ) {
   const { name, remainingCost, accumulatedCost, level } = building;
-  const baseCost = getBuildingBaseCost(name, buildingInitialCosts) as number;
+  const baseCost = getBuildingBaseCost(name, buildingInitialCosts);
+  const { labor, hide, food, wood, stone } = baseCost;
 
   let newLaborProduction = laborProduction;
   let newRemainingCost = remainingCost;
@@ -59,11 +60,11 @@ function processBuildingQueueItem(
 
     if (newLaborProduction > 0) {
       const additionalBuildings = Math.min(
-        Math.floor(newLaborProduction / baseCost),
+        Math.floor(newLaborProduction / labor),
         newCount,
       );
       newBuildings += additionalBuildings;
-      newLaborProduction -= additionalBuildings * baseCost;
+      newLaborProduction -= additionalBuildings * labor;
       newCount -= additionalBuildings;
 
       if (newCount <= 0) {
@@ -80,13 +81,13 @@ function processBuildingQueueItem(
         newAccumulatedCost += newLaborProduction;
         newLaborProduction = 0;
 
-        if (newAccumulatedCost >= baseCost) {
+        if (newAccumulatedCost >= labor) {
           const additionalFromAccumulated = Math.min(
-            Math.floor(newAccumulatedCost / baseCost),
+            Math.floor(newAccumulatedCost / labor),
             newCount,
           );
           newBuildings += additionalFromAccumulated;
-          newAccumulatedCost -= additionalFromAccumulated * baseCost;
+          newAccumulatedCost -= additionalFromAccumulated * labor;
           newCount -= additionalFromAccumulated;
         }
       }
@@ -96,13 +97,13 @@ function processBuildingQueueItem(
     newRemainingCost -= newLaborProduction;
     newLaborProduction = 0;
 
-    if (newAccumulatedCost >= baseCost) {
+    if (newAccumulatedCost >= labor) {
       const buildingsFromAccumulated = Math.min(
-        Math.floor(newAccumulatedCost / baseCost),
+        Math.floor(newAccumulatedCost / labor),
         newCount,
       );
       newBuildings += buildingsFromAccumulated;
-      newAccumulatedCost -= buildingsFromAccumulated * baseCost;
+      newAccumulatedCost -= buildingsFromAccumulated * labor;
       newCount -= buildingsFromAccumulated;
     }
   }

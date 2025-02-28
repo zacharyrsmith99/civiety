@@ -83,10 +83,48 @@ export interface LandTile {
   improvements: Improvement[];
 }
 
+export interface HousingBuildingInitialCosts {
+  labor: number;
+  hide: number;
+  food: number;
+  wood: number;
+  stone: number;
+}
+
+export interface AgricultureBuildingInitialCosts {
+  labor: number;
+  hide: number;
+  food: number;
+  wood: number;
+  stone: number;
+}
+
+export interface IndustryBuildingInitialCosts {
+  labor: number;
+  hide: number;
+  food: number;
+  wood: number;
+  stone: number;
+}
+
 export interface BuildingInitialCosts {
-  housing: Record<HousingBuildingType, number>;
-  agriculture: Record<AgricultureBuildingType, number>;
-  industry: Record<IndustryBuildingType, number>;
+  housing: Record<HousingBuildingType, HousingBuildingInitialCosts>;
+  agriculture: Record<AgricultureBuildingType, AgricultureBuildingInitialCosts>;
+  industry: Record<IndustryBuildingType, IndustryBuildingInitialCosts>;
+}
+
+export interface ResourceUpkeepCosts {
+  labor: number;
+  food: number;
+  wood: number;
+  stone: number;
+  hide: number;
+}
+
+export interface BuildingUpkeepCosts {
+  housing: Record<HousingBuildingType, ResourceUpkeepCosts>;
+  agriculture: Record<AgricultureBuildingType, ResourceUpkeepCosts>;
+  industry: Record<IndustryBuildingType, ResourceUpkeepCosts>;
 }
 
 export interface BuildingInfo {
@@ -110,6 +148,7 @@ export interface LandState {
   biomeHunterFoodProductionMultipliers: Record<BiomeType, number[]>;
   biomeFarmerFoodProductionMultipliers: Record<BiomeType, number[]>;
   buildingInitialCosts: BuildingInitialCosts;
+  buildingUpkeepCosts: BuildingUpkeepCosts;
   buildingQueue: BuildingQueue[];
   buildingInfo: BuildingInfo;
 }

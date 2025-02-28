@@ -34,4 +34,6 @@ export interface GameState {
   // OCCUPATIONS
   laborerProductionBaseRates: number[];
   laborerProductionMultipliers: number[];
+  hunterHideBaseProductionRates: number[];
+  hunterHideProductionMultipliers: number[];
 }
