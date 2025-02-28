@@ -65,6 +65,9 @@ const TimeDisplay = () => {
   const { day, week, month, year, isPaused, tickRate, tickSpeed } =
     useAppSelector((state) => state.game);
 
+  // eslint-disable-next-line prettier/prettier
+  const displayDay = day + ((week - 1) * 7);
+
   const handleManualTick = () => {
     dispatch({ type: "game/manualTick" });
   };
@@ -101,7 +104,7 @@ const TimeDisplay = () => {
     }
   };
 
-  const displayDate = `${day}${getOrdinalSuffix(day)} ${months[month - 1]}, Year ${year}`;
+  const displayDate = `${displayDay}${getOrdinalSuffix(displayDay)} ${months[month - 1]}, Year ${year}`;
 
   return (
     <div className="flex flex-col border-b border-amber-700/30">
