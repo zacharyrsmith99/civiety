@@ -62,8 +62,7 @@ export const BuildingPanel: React.FC<BuildingPanelProps> = ({
 
   const handleAddBuilding = () => {
     const buildingName = "makeshiftHousing" as HousingBuildingType;
-    const unitCost = buildingInitialCosts.housing[buildingName].labor;
-    const totalCost = unitCost * selectedQuantity;
+    const initialCost = buildingInitialCosts.housing[buildingName];
 
     dispatch(
       addBuildingToQueue({
@@ -71,9 +70,21 @@ export const BuildingPanel: React.FC<BuildingPanelProps> = ({
         type: "housing",
         position,
         level: selectedQuantity,
-        initialCost: totalCost,
-        remainingCost: totalCost,
-        accumulatedCost: 0,
+        initialCost: {
+          labor: initialCost.labor * selectedQuantity,
+          hide: initialCost.hide * selectedQuantity,
+          food: initialCost.food * selectedQuantity,
+          wood: initialCost.wood * selectedQuantity,
+          stone: initialCost.stone * selectedQuantity,
+        },
+        remainingCost: {
+          labor: initialCost.labor * selectedQuantity,
+          hide: initialCost.hide * selectedQuantity,
+          food: initialCost.food * selectedQuantity,
+          wood: initialCost.wood * selectedQuantity,
+          stone: initialCost.stone * selectedQuantity,
+        },
+        accumulatedLabor: 0,
       }),
     );
   };

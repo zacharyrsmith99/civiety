@@ -32,19 +32,19 @@ function processBuildingQueueItem(
   buildingInitialCosts: BuildingInitialCosts,
   laborProduction: number,
 ) {
-  const { name, remainingCost, accumulatedCost, level } = building;
+  const { name, remainingCost, accumulatedLabor, level } = building;
   const baseCost = getBuildingBaseCost(name, buildingInitialCosts);
   const { labor, hide, food, wood, stone } = baseCost;
 
   let newLaborProduction = laborProduction;
-  let newRemainingCost = remainingCost;
-  let newAccumulatedCost = accumulatedCost;
+  const newRemainingCost = { ...remainingCost };
+  let newAccumulatedLabor = accumulatedLabor;
   let newBuildings = 0;
   let newCount = level;
 
-  if (newLaborProduction >= newRemainingCost) {
-    newLaborProduction -= newRemainingCost;
-    newRemainingCost = 0;
+  if (newLaborProduction >= newRemainingCost.labor) {
+    newLaborProduction -= newRemainingCost.labor;
+    newRemainingCost.labor = 0;
     newBuildings = 1;
     newCount--;
 
@@ -52,7 +52,7 @@ function processBuildingQueueItem(
       return {
         newLaborProduction,
         newRemainingCost,
-        newAccumulatedCost,
+        newAccumulatedLabor,
         newBuildings,
         newCount,
       };
@@ -71,39 +71,39 @@ function processBuildingQueueItem(
         return {
           newLaborProduction,
           newRemainingCost,
-          newAccumulatedCost,
+          newAccumulatedLabor,
           newBuildings,
           newCount,
         };
       }
 
       if (newLaborProduction > 0) {
-        newAccumulatedCost += newLaborProduction;
+        newAccumulatedLabor += newLaborProduction;
         newLaborProduction = 0;
 
-        if (newAccumulatedCost >= labor) {
+        if (newAccumulatedLabor >= labor) {
           const additionalFromAccumulated = Math.min(
-            Math.floor(newAccumulatedCost / labor),
+            Math.floor(newAccumulatedLabor / labor),
             newCount,
           );
           newBuildings += additionalFromAccumulated;
-          newAccumulatedCost -= additionalFromAccumulated * labor;
+          newAccumulatedLabor -= additionalFromAccumulated * labor;
           newCount -= additionalFromAccumulated;
         }
       }
     }
   } else {
-    newAccumulatedCost += newLaborProduction;
-    newRemainingCost -= newLaborProduction;
+    newAccumulatedLabor += newLaborProduction;
+    newRemainingCost.labor -= newLaborProduction;
     newLaborProduction = 0;
 
-    if (newAccumulatedCost >= labor) {
+    if (newAccumulatedLabor >= labor) {
       const buildingsFromAccumulated = Math.min(
-        Math.floor(newAccumulatedCost / labor),
+        Math.floor(newAccumulatedLabor / labor),
         newCount,
       );
       newBuildings += buildingsFromAccumulated;
-      newAccumulatedCost -= buildingsFromAccumulated * labor;
+      newAccumulatedLabor -= buildingsFromAccumulated * labor;
       newCount -= buildingsFromAccumulated;
     }
   }
@@ -111,7 +111,7 @@ function processBuildingQueueItem(
   return {
     newLaborProduction,
     newRemainingCost,
-    newAccumulatedCost,
+    newAccumulatedLabor,
     newBuildings,
     newCount,
   };
@@ -165,7 +165,15 @@ export function processBuildingQueue(
       continue;
     }
     const building = buildingQueue[i];
-    const newBuilding = { ...building };
+    const newBuilding = {
+      name: building.name,
+      type: building.type,
+      position: building.position,
+      level: building.level,
+      initialCost: { ...building.initialCost },
+      remainingCost: { ...building.remainingCost },
+      accumulatedLabor: building.accumulatedLabor,
+    };
     const result = processBuildingQueueItem(
       building,
       buildingInitialCosts,
@@ -178,18 +186,18 @@ export function processBuildingQueue(
     const {
       newLaborProduction,
       newRemainingCost,
-      newAccumulatedCost,
+      newAccumulatedLabor,
       newBuildings,
       newCount,
     } = result;
 
     currentLaborProduction = newLaborProduction;
 
-    if (newRemainingCost > 0) {
+    if (newRemainingCost.labor > 0) {
       newBuildingQueue.push({
         ...newBuilding,
         remainingCost: newRemainingCost,
-        accumulatedCost: newAccumulatedCost,
+        accumulatedLabor: newAccumulatedLabor,
         level: newCount,
       });
     }

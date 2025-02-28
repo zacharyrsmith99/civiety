@@ -64,9 +64,21 @@ export interface BuildingQueue {
   type: keyof Buildings;
   position: GridPosition;
   level: number;
-  initialCost: number;
-  remainingCost: number;
-  accumulatedCost: number;
+  initialCost: {
+    labor: number;
+    hide: number;
+    food: number;
+    wood: number;
+    stone: number;
+  };
+  remainingCost: {
+    labor: number;
+    hide: number;
+    food: number;
+    wood: number;
+    stone: number;
+  };
+  accumulatedLabor: number;
 }
 
 export interface LandTile {
