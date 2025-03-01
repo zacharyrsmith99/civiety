@@ -14,7 +14,14 @@ const LedgerPanel = () => {
   const baseConsumption = useAppSelector(
     (state) => state.resources.newFoodConsumption,
   );
+  const hideProduction = useAppSelector(
+    (state) => state.resources.hideProduction,
+  );
+  const hideConsumption = useAppSelector(
+    (state) => state.resources.hideConsumption,
+  );
   const netFoodChangePerSecond = foodProduction - baseConsumption;
+  const netHideChangePerSecond = hideProduction - hideConsumption;
   const isStarving = stores.food === 0;
 
   const foodSecurityScore = useAppSelector(
@@ -92,7 +99,12 @@ const LedgerPanel = () => {
     },
     { name: "Stone", icon: "🪨", amount: stores.stone, change: 0 },
     { name: "Wood", icon: "🪵", amount: stores.wood, change: 0 },
-    { name: "Hides", icon: "🦊", amount: stores.hide, change: 0 },
+    {
+      name: "Hides",
+      icon: "🦊",
+      amount: stores.hide,
+      change: netHideChangePerSecond,
+    },
   ];
 
   // Determine warning levels based on security scores

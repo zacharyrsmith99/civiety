@@ -8,7 +8,11 @@ import {
   tick,
   updateAccumulatedChildPopulationGrowth,
 } from "@/store/slices/gameSlice";
-import { updateFood, updateResources } from "@/store/slices/resourcesSlice";
+import {
+  updateFood,
+  updateHide,
+  updateResources,
+} from "@/store/slices/resourcesSlice";
 import { advanceTime } from "@/store/slices/gameSlice";
 import {
   calculateLackOfHousingDeathRates,
@@ -33,6 +37,11 @@ import {
 import { ChildCohort } from "@/store/slices/types/population";
 import { processBuildingQueue } from "../util/landActions";
 import { updateBuildings } from "@/store/slices/landSlice";
+import {
+  calculateHideConsumption,
+  calculateHideProduction,
+  calculateNewHideStock,
+} from "../util/resources/hideActions";
 
 export function processGameTick(
   store: MiddlewareAPI<Dispatch<UnknownAction>, RootState>,
@@ -76,6 +85,20 @@ export function processGameTick(
     }),
   );
 
+  const hideProduction = calculateHideProduction(state, tickRateMultiplier);
+  const hideConsumption = calculateHideConsumption(state, tickRateMultiplier);
+  const newHide = calculateNewHideStock(
+    state.resources.stores.hide,
+    hideProduction,
+    hideConsumption,
+  );
+  store.dispatch(
+    updateHide({
+      newHide: newHide,
+      newHideProduction: hideProduction,
+      newHideConsumption: hideConsumption,
+    }),
+  );
   state = store.getState();
 
   const { starvationDeathRateMultipliers, foodSecurityScore } =

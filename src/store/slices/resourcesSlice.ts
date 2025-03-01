@@ -31,6 +31,18 @@ const resourcesSlice = createSlice({
       state.newFoodConsumptionByCohort =
         action.payload.newFoodConsumptionByCohort;
     },
+    updateHide: (
+      state,
+      action: PayloadAction<{
+        newHide: number;
+        newHideProduction: number;
+        newHideConsumption: number;
+      }>,
+    ) => {
+      state.stores.hide = action.payload.newHide;
+      state.hideProduction = action.payload.newHideProduction;
+      state.hideConsumption = action.payload.newHideConsumption;
+    },
     updateResources: (state, action: PayloadAction<ResourceStores>) => {
       state.stores = action.payload;
     },
@@ -55,5 +67,6 @@ export const {
   updateFoodProduction,
   updateGatherFoodProduction,
   updateResources,
+  updateHide,
 } = resourcesSlice.actions;
 export default resourcesSlice.reducer;

@@ -74,14 +74,6 @@ function calculateBuildings(
     baseCosts.stoneBaseCost,
   );
 
-  console.log({
-    additionalBuildingsFood,
-    additionalBuildingsHide,
-    additionalBuildingsWood,
-    additionalBuildingsStone,
-    additionalBuildingsLabor,
-  });
-
   const additionalBuildings = Math.min(
     additionalBuildingsFood,
     additionalBuildingsHide,
@@ -156,14 +148,6 @@ function processBuildingQueueItem(
     level,
   );
 
-  console.log({
-    buildingsThatCanBeBuilt,
-    newLaborProduction,
-    newRemainingCost,
-    newAccumulatedLabor,
-    newBuildings,
-    newLevel,
-  });
   if (buildingsThatCanBeBuilt > 0) {
     newBuildings += buildingsThatCanBeBuilt;
     newLaborProduction = subtractResources(

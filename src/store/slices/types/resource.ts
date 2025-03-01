@@ -15,4 +15,6 @@ export interface ResourcesState {
   hunterFoodProduction: number;
   newFoodConsumption: number;
   newFoodConsumptionByCohort: FoodConsumptionByCohort[];
+  hideProduction: number;
+  hideConsumption: number;
 }
