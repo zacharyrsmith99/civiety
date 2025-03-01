@@ -8,7 +8,7 @@ import {
   tick,
   updateAccumulatedChildPopulationGrowth,
 } from "@/store/slices/gameSlice";
-import { updateFood } from "@/store/slices/resourcesSlice";
+import { updateFood, updateResources } from "@/store/slices/resourcesSlice";
 import { advanceTime } from "@/store/slices/gameSlice";
 import {
   calculateLackOfHousingDeathRates,
@@ -99,13 +99,14 @@ export function processGameTick(
       state,
       tickRateMultiplier,
     );
-    const { newTiles, newBuildingQueue } = processBuildingQueue(
+    const { newTiles, newBuildingQueue, resources } = processBuildingQueue(
       state,
       laborerProduction,
     );
     store.dispatch(
       updateBuildings({ tiles: newTiles, buildingQueue: newBuildingQueue }),
     );
+    store.dispatch(updateResources(resources));
   }
   const { newChildFemaleCohort, newChildMaleCohort, newGrowthAccumulator } =
     simulateBirths(state, tickRateMultiplier);

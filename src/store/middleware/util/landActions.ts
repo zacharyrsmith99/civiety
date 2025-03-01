@@ -42,27 +42,52 @@ function calculateBuildings(
   resourceStores: ResourceStores,
   level: number,
 ) {
-  const additionalBuildingsLabor = Math.floor(
-    laborProduction / baseCosts.laborBaseCost,
+  const calculateAdditionalBuildings = (
+    resourceAmount: number,
+    baseCost: number,
+  ) => {
+    const result = Math.floor(resourceAmount / baseCost);
+    if (isNaN(result)) {
+      return Infinity;
+    }
+    return result;
+  };
+
+  const additionalBuildingsLabor = calculateAdditionalBuildings(
+    laborProduction,
+    baseCosts.laborBaseCost,
   );
-  const additionalBuildingsFood = Math.floor(
-    resourceStores.food / baseCosts.foodBaseCost,
+  const additionalBuildingsFood = calculateAdditionalBuildings(
+    resourceStores.food,
+    baseCosts.foodBaseCost,
   );
-  const additionalBuildingsHide = Math.floor(
-    resourceStores.hide / baseCosts.hideBaseCost,
+  const additionalBuildingsHide = calculateAdditionalBuildings(
+    resourceStores.hide,
+    baseCosts.hideBaseCost,
   );
-  const additionalBuildingsWood = Math.floor(
-    resourceStores.wood / baseCosts.woodBaseCost,
+  const additionalBuildingsWood = calculateAdditionalBuildings(
+    resourceStores.wood,
+    baseCosts.woodBaseCost,
   );
-  const additionalBuildingsStone = Math.floor(
-    resourceStores.stone / baseCosts.stoneBaseCost,
+  const additionalBuildingsStone = calculateAdditionalBuildings(
+    resourceStores.stone,
+    baseCosts.stoneBaseCost,
   );
+
+  console.log({
+    additionalBuildingsFood,
+    additionalBuildingsHide,
+    additionalBuildingsWood,
+    additionalBuildingsStone,
+    additionalBuildingsLabor,
+  });
+
   const additionalBuildings = Math.min(
-    additionalBuildingsFood ? additionalBuildingsFood : Infinity,
-    additionalBuildingsHide ? additionalBuildingsHide : Infinity,
-    additionalBuildingsWood ? additionalBuildingsWood : Infinity,
-    additionalBuildingsStone ? additionalBuildingsStone : Infinity,
-    additionalBuildingsLabor ? additionalBuildingsLabor : Infinity,
+    additionalBuildingsFood,
+    additionalBuildingsHide,
+    additionalBuildingsWood,
+    additionalBuildingsStone,
+    additionalBuildingsLabor,
   );
 
   return Math.min(additionalBuildings, level);
@@ -131,6 +156,14 @@ function processBuildingQueueItem(
     level,
   );
 
+  console.log({
+    buildingsThatCanBeBuilt,
+    newLaborProduction,
+    newRemainingCost,
+    newAccumulatedLabor,
+    newBuildings,
+    newLevel,
+  });
   if (buildingsThatCanBeBuilt > 0) {
     newBuildings += buildingsThatCanBeBuilt;
     newLaborProduction = subtractResources(
@@ -148,9 +181,20 @@ function processBuildingQueueItem(
     );
     newLevel -= buildingsThatCanBeBuilt;
   } else {
-    newAccumulatedLabor += newLaborProduction;
-    newRemainingCost.labor -= newLaborProduction;
-    newLaborProduction = 0;
+    const maxAccumulatedLabor = Math.floor(newLaborProduction / laborBaseCost);
+    if (newAccumulatedLabor + newLaborProduction > maxAccumulatedLabor) {
+      newAccumulatedLabor = maxAccumulatedLabor;
+    } else {
+      newAccumulatedLabor += newLaborProduction;
+    }
+
+    if (newRemainingCost.labor - newLaborProduction <= 0) {
+      newLaborProduction -= newRemainingCost.labor;
+      newRemainingCost.labor = 0;
+    } else {
+      newRemainingCost.labor -= newLaborProduction;
+      newLaborProduction = 0;
+    }
 
     const additionalBuildingsFromAccumulated = calculateBuildings(
       newAccumulatedLabor,
@@ -192,6 +236,22 @@ function processBuildingQueueItem(
     newBuildings,
     newLevel,
   };
+}
+
+function hasRemainingCost(remainingCost: {
+  labor: number;
+  hide: number;
+  food: number;
+  wood: number;
+  stone: number;
+}) {
+  return (
+    remainingCost.labor > 0 ||
+    remainingCost.hide > 0 ||
+    remainingCost.food > 0 ||
+    remainingCost.wood > 0 ||
+    remainingCost.stone > 0
+  );
 }
 
 export function processBuildingQueue(
@@ -243,6 +303,7 @@ export function processBuildingQueue(
       newBuildingQueue.push(buildingQueue[i]);
       continue;
     }
+
     const building = buildingQueue[i];
     const newBuilding = {
       name: building.name,
@@ -253,16 +314,14 @@ export function processBuildingQueue(
       remainingCost: { ...building.remainingCost },
       accumulatedLabor: building.accumulatedLabor,
     };
+
     const result = processBuildingQueueItem(
       building,
       buildingInitialCosts,
       newStores,
       currentLaborProduction,
     );
-    if (!result) {
-      newBuildingQueue.push(building);
-      continue;
-    }
+
     const {
       newLaborProduction,
       newRemainingCost,
@@ -273,7 +332,7 @@ export function processBuildingQueue(
 
     currentLaborProduction = newLaborProduction;
 
-    if (newRemainingCost.labor > 0) {
+    if (hasRemainingCost(newRemainingCost)) {
       newBuildingQueue.push({
         ...newBuilding,
         remainingCost: newRemainingCost,
@@ -317,5 +376,6 @@ export function processBuildingQueue(
   return {
     newTiles,
     newBuildingQueue,
+    resources: newStores,
   };
 }
