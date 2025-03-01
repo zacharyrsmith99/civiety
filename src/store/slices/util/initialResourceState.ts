@@ -12,5 +12,7 @@ export const initialState: ResourcesState = {
   gatherFoodProduction: 0,
   hunterFoodProduction: 0,
   newFoodConsumption: 0,
+  hideProduction: 0,
+  hideConsumption: 0,
   newFoodConsumptionByCohort: [],
 };
