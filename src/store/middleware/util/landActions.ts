@@ -28,6 +28,74 @@ function getBuildingBaseCost(
   }
 }
 
+interface BaseCosts {
+  laborBaseCost: number;
+  hideBaseCost: number;
+  foodBaseCost: number;
+  woodBaseCost: number;
+  stoneBaseCost: number;
+}
+
+function calculateBuildings(
+  laborProduction: number,
+  baseCosts: BaseCosts,
+  resourceStores: ResourceStores,
+  level: number,
+) {
+  const additionalBuildingsLabor = Math.floor(
+    laborProduction / baseCosts.laborBaseCost,
+  );
+  const additionalBuildingsFood = Math.floor(
+    resourceStores.food / baseCosts.foodBaseCost,
+  );
+  const additionalBuildingsHide = Math.floor(
+    resourceStores.hide / baseCosts.hideBaseCost,
+  );
+  const additionalBuildingsWood = Math.floor(
+    resourceStores.wood / baseCosts.woodBaseCost,
+  );
+  const additionalBuildingsStone = Math.floor(
+    resourceStores.stone / baseCosts.stoneBaseCost,
+  );
+  const additionalBuildings = Math.min(
+    additionalBuildingsFood ? additionalBuildingsFood : Infinity,
+    additionalBuildingsHide ? additionalBuildingsHide : Infinity,
+    additionalBuildingsWood ? additionalBuildingsWood : Infinity,
+    additionalBuildingsStone ? additionalBuildingsStone : Infinity,
+    additionalBuildingsLabor ? additionalBuildingsLabor : Infinity,
+  );
+
+  return Math.min(additionalBuildings, level);
+}
+
+function subtractResources(
+  resources: ResourceStores,
+  remainingCost: {
+    labor: number;
+    hide: number;
+    food: number;
+    wood: number;
+    stone: number;
+  },
+  laborProduction: number,
+  baseCost: BaseCosts,
+  buildingLevel: number,
+) {
+  resources.food -= baseCost.foodBaseCost * buildingLevel;
+  resources.hide -= baseCost.hideBaseCost * buildingLevel;
+  resources.wood -= baseCost.woodBaseCost * buildingLevel;
+  resources.stone -= baseCost.stoneBaseCost * buildingLevel;
+
+  remainingCost.hide -= baseCost.hideBaseCost * buildingLevel;
+  remainingCost.wood -= baseCost.woodBaseCost * buildingLevel;
+  remainingCost.stone -= baseCost.stoneBaseCost * buildingLevel;
+  remainingCost.labor -= baseCost.laborBaseCost * buildingLevel;
+
+  laborProduction -= baseCost.laborBaseCost * buildingLevel;
+
+  return laborProduction;
+}
+
 function processBuildingQueueItem(
   building: BuildingQueue,
   buildingInitialCosts: BuildingInitialCosts,
@@ -36,77 +104,84 @@ function processBuildingQueueItem(
 ) {
   const { name, remainingCost, accumulatedLabor, level } = building;
   const baseCost = getBuildingBaseCost(name, buildingInitialCosts);
-  const { labor, hide, food, wood, stone } = baseCost;
+  const {
+    labor: laborBaseCost,
+    hide: hideBaseCost,
+    food: foodBaseCost,
+    wood: woodBaseCost,
+    stone: stoneBaseCost,
+  } = baseCost;
 
   let newLaborProduction = laborProduction;
   const newRemainingCost = { ...remainingCost };
   let newAccumulatedLabor = accumulatedLabor;
   let newBuildings = 0;
-  let newCount = level;
+  let newLevel = level;
 
-  if (newLaborProduction >= newRemainingCost.labor) {
-    newLaborProduction -= newRemainingCost.labor;
-    newRemainingCost.labor = 0;
-    newBuildings = 1;
-    newCount--;
+  const buildingsThatCanBeBuilt = calculateBuildings(
+    newLaborProduction,
+    {
+      laborBaseCost,
+      hideBaseCost,
+      foodBaseCost,
+      woodBaseCost,
+      stoneBaseCost,
+    },
+    resourceStores,
+    level,
+  );
 
-    if (newCount <= 0) {
-      return {
-        newLaborProduction,
-        newRemainingCost,
-        newAccumulatedLabor,
-        newBuildings,
-        newCount,
-      };
-    }
-
-    if (newLaborProduction > 0) {
-      const additionalBuildings = Math.min(
-        Math.floor(newLaborProduction / labor),
-        newCount,
-      );
-      newBuildings += additionalBuildings;
-      newLaborProduction -= additionalBuildings * labor;
-      newCount -= additionalBuildings;
-
-      if (newCount <= 0) {
-        return {
-          newLaborProduction,
-          newRemainingCost,
-          newAccumulatedLabor,
-          newBuildings,
-          newCount,
-        };
-      }
-
-      if (newLaborProduction > 0) {
-        newAccumulatedLabor += newLaborProduction;
-        newLaborProduction = 0;
-
-        if (newAccumulatedLabor >= labor) {
-          const additionalFromAccumulated = Math.min(
-            Math.floor(newAccumulatedLabor / labor),
-            newCount,
-          );
-          newBuildings += additionalFromAccumulated;
-          newAccumulatedLabor -= additionalFromAccumulated * labor;
-          newCount -= additionalFromAccumulated;
-        }
-      }
-    }
+  if (buildingsThatCanBeBuilt > 0) {
+    newBuildings += buildingsThatCanBeBuilt;
+    newLaborProduction = subtractResources(
+      resourceStores,
+      newRemainingCost,
+      newLaborProduction,
+      {
+        laborBaseCost,
+        hideBaseCost,
+        foodBaseCost,
+        woodBaseCost,
+        stoneBaseCost,
+      },
+      buildingsThatCanBeBuilt,
+    );
+    newLevel -= buildingsThatCanBeBuilt;
   } else {
     newAccumulatedLabor += newLaborProduction;
     newRemainingCost.labor -= newLaborProduction;
     newLaborProduction = 0;
 
-    if (newAccumulatedLabor >= labor) {
-      const buildingsFromAccumulated = Math.min(
-        Math.floor(newAccumulatedLabor / labor),
-        newCount,
+    const additionalBuildingsFromAccumulated = calculateBuildings(
+      newAccumulatedLabor,
+      {
+        laborBaseCost,
+        hideBaseCost,
+        foodBaseCost,
+        woodBaseCost,
+        stoneBaseCost,
+      },
+      resourceStores,
+      newLevel,
+    );
+
+    if (additionalBuildingsFromAccumulated > 0) {
+      newLaborProduction = subtractResources(
+        resourceStores,
+        newRemainingCost,
+        newAccumulatedLabor,
+        {
+          laborBaseCost,
+          hideBaseCost,
+          foodBaseCost,
+          woodBaseCost,
+          stoneBaseCost,
+        },
+        additionalBuildingsFromAccumulated,
       );
-      newBuildings += buildingsFromAccumulated;
-      newAccumulatedLabor -= buildingsFromAccumulated * labor;
-      newCount -= buildingsFromAccumulated;
+      newBuildings += additionalBuildingsFromAccumulated;
+      newAccumulatedLabor -= additionalBuildingsFromAccumulated * laborBaseCost;
+      newLevel -= additionalBuildingsFromAccumulated;
     }
   }
 
@@ -115,7 +190,7 @@ function processBuildingQueueItem(
     newRemainingCost,
     newAccumulatedLabor,
     newBuildings,
-    newCount,
+    newLevel,
   };
 }
 
@@ -123,6 +198,8 @@ export function processBuildingQueue(
   state: RootState,
   laborProduction: number,
 ) {
+  const stores = state.resources.stores;
+  const newStores = { ...stores };
   const { buildingQueue, buildingInitialCosts, buildingInfo } = state.land;
 
   const { tiles } = state.land;
@@ -179,6 +256,7 @@ export function processBuildingQueue(
     const result = processBuildingQueueItem(
       building,
       buildingInitialCosts,
+      newStores,
       currentLaborProduction,
     );
     if (!result) {
@@ -190,7 +268,7 @@ export function processBuildingQueue(
       newRemainingCost,
       newAccumulatedLabor,
       newBuildings,
-      newCount,
+      newLevel,
     } = result;
 
     currentLaborProduction = newLaborProduction;
@@ -200,7 +278,7 @@ export function processBuildingQueue(
         ...newBuilding,
         remainingCost: newRemainingCost,
         accumulatedLabor: newAccumulatedLabor,
-        level: newCount,
+        level: newLevel,
       });
     }
     if (newBuildings > 0) {

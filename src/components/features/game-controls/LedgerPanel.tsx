@@ -92,7 +92,7 @@ const LedgerPanel = () => {
     },
     { name: "Stone", icon: "🪨", amount: stores.stone, change: 0 },
     { name: "Wood", icon: "🪵", amount: stores.wood, change: 0 },
-    { name: "Hides", icon: "🦊", amount: stores.hides, change: 0 },
+    { name: "Hides", icon: "🦊", amount: stores.hide, change: 0 },
   ];
 
   // Determine warning levels based on security scores

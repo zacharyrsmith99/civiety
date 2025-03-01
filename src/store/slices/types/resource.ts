@@ -2,7 +2,7 @@ import { FoodConsumptionByCohort } from "@/store/middleware/util/resources/foodA
 
 export interface ResourceStores {
   food: number;
-  hides: number;
+  hide: number;
   stone: number;
   wood: number;
 }

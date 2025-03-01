@@ -28,7 +28,7 @@ export const BuildingQueue: React.FC = () => {
         <div className="space-y-2 max-h-[350px] overflow-y-auto custom-scrollbar pr-1">
           {buildingQueue.map((item, index) => {
             const progressPercent = Math.floor(
-              (item.accumulatedCost / item.initialCost) * 100,
+              (item.accumulatedLabor / item.initialCost.labor) * 100,
             );
             return (
               <div
@@ -56,8 +56,8 @@ export const BuildingQueue: React.FC = () => {
                   ></div>
                 </div>
                 <div className="mt-1 text-xs text-right text-amber-100/70">
-                  {item.initialCost - item.remainingCost} / {item.initialCost}{" "}
-                  labor
+                  {item.initialCost.labor - item.remainingCost.labor} /{" "}
+                  {item.initialCost.labor} labor
                 </div>
               </div>
             );

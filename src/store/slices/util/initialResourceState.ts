@@ -3,7 +3,7 @@ import { ResourcesState } from "../types/resource";
 export const initialState: ResourcesState = {
   stores: {
     food: 100,
-    hides: 5,
+    hide: 5,
     stone: 0,
     wood: 0,
   },
