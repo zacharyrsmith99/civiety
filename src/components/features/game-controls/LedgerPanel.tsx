@@ -465,7 +465,7 @@ const LedgerPanel = () => {
                     }`}
                   >
                     {resource.change >= 0 ? "+" : ""}
-                    {resource.change.toFixed(1)}/s
+                    {resource.change.toFixed(1)}
                   </span>
                 </div>
               ))}

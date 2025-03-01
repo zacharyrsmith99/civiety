@@ -65,9 +65,11 @@ export function processGameTick(
     farmFoodProduction,
     gatherFoodProduction,
     hunterFoodProduction,
-  } = calculateFoodProduction(state);
-  const { foodConsumption, foodConsumptionByCohort } =
-    calculateFoodConsumption(state);
+  } = calculateFoodProduction(state, tickRateMultiplier);
+  const { foodConsumption, foodConsumptionByCohort } = calculateFoodConsumption(
+    state,
+    tickRateMultiplier,
+  );
   const newFood = calculateNewFoodStock(
     state.resources.stores.food,
     foodProduction,

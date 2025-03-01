@@ -37,7 +37,10 @@ function calculateHunterFoodProduction(
   return hunterProduction;
 }
 
-export function calculateFoodProduction(state: RootState) {
+export function calculateFoodProduction(
+  state: RootState,
+  tickRateMultiplier: number,
+) {
   const { farmers, gatherers, hunters } = state.occupations.size;
   const tiles = Object.values(state.land.tiles);
   const gathererFoodProductionBaseRates =
@@ -70,7 +73,8 @@ export function calculateFoodProduction(state: RootState) {
   //   farmerFoodProductionBaseRates,
   //   farmerFoodProductionMultipliers,
   // );
-  const foodProduction = gatherFoodProduction;
+  const foodProduction =
+    (gatherFoodProduction + hunterFoodProduction) * tickRateMultiplier;
   return {
     foodProduction,
     gatherFoodProduction,
@@ -91,7 +95,10 @@ export interface FoodConsumptionByCohort {
   gender: Gender;
 }
 
-export function calculateFoodConsumption(state: RootState): ConsumptionRates {
+export function calculateFoodConsumption(
+  state: RootState,
+  tickRateMultiplier: number,
+): ConsumptionRates {
   // children consume 50% of the food of adults
   // adults consume 100% of the food of adults
   // elders consume 75% of the food of adults
@@ -118,7 +125,8 @@ export function calculateFoodConsumption(state: RootState): ConsumptionRates {
       multiplier *= 0.75;
     }
 
-    const cohortConsumption = cohort.size * baseConsumption * multiplier;
+    const cohortConsumption =
+      cohort.size * baseConsumption * multiplier * tickRateMultiplier;
 
     foodConsumptionByCohort.push({
       foodConsumption: cohortConsumption,
