@@ -42,6 +42,7 @@ import {
   calculateHideProduction,
   calculateNewHideStock,
 } from "../util/resources/hideActions";
+import { calculateBuildingUpkeepResourceUsage } from "../util/buildingUpkeepActions";
 
 export function processGameTick(
   store: MiddlewareAPI<Dispatch<UnknownAction>, RootState>,
@@ -119,11 +120,22 @@ export function processGameTick(
   store.dispatch(updateCohorts({ cohorts: newCohorts, total: newTotal }));
   state = store.getState();
 
+  const buildingUpkeep = calculateBuildingUpkeepResourceUsage(state);
+  const newResources = {
+    food: state.resources.stores.food - buildingUpkeep.food,
+    wood: state.resources.stores.wood - buildingUpkeep.wood,
+    stone: state.resources.stores.stone - buildingUpkeep.stone,
+    hide: state.resources.stores.hide - buildingUpkeep.hide,
+  };
+  store.dispatch(updateResources(newResources));
   if (state.land.buildingQueue.length > 0) {
-    const laborerProduction = calculateLaborerProduction(
+    let laborerProduction = calculateLaborerProduction(
       state,
       tickRateMultiplier,
     );
+    if (buildingUpkeep.labor > 0) {
+      laborerProduction -= buildingUpkeep.labor;
+    }
     const { newTiles, newBuildingQueue, resources } = processBuildingQueue(
       state,
       laborerProduction,

@@ -101,9 +101,9 @@ export const initialState: GameState = {
   // FOOD
   foodConsumptionBaseRates: [0.00274],
   foodConsumptionMultipliers: [],
-  hunterFoodProductionBaseRates: [0.0035],
+  hunterFoodProductionBaseRates: [0.0031],
   hunterFoodProductionMultipliers: [],
-  gathererFoodProductionBaseRates: [0.006],
+  gathererFoodProductionBaseRates: [0.0045],
   gathererFoodProductionMultipliers: [],
   farmerFoodProductionBaseRates: [0.5],
   farmerFoodProductionMultipliers: [],
