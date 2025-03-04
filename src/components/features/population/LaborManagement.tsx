@@ -4,6 +4,7 @@ import { getWorkingAgePopulation } from "@/store/middleware/util/stateInformatio
 import {
   OccupationsState,
   setOccupationAllocation,
+  setOccupationLockStatus,
 } from "@/store/slices/occupationsSlice";
 import { HunterSlider } from "./components/HunterSlider";
 import { GathererSlider } from "./components/GathererSlider";
@@ -22,9 +23,11 @@ interface OccupationSlider {
 export const LaborManagement: React.FC = () => {
   const dispatch = useAppDispatch();
   const workingPopulation = useAppSelector(getWorkingAgePopulation);
-  const { size: occupationSize, occupationAllocation } = useAppSelector(
-    (state) => state.occupations,
-  );
+  const {
+    size: occupationSize,
+    occupationAllocation,
+    lockStatus,
+  } = useAppSelector((state) => state.occupations);
 
   const totalEmployed = Object.values(occupationSize).reduce(
     (sum, count) => sum + count,
@@ -105,13 +108,17 @@ export const LaborManagement: React.FC = () => {
         ...slider,
         percentage,
         canAssign: slider.id === "farmers" ? false : true,
+        locked: lockStatus?.[slider.id] || false,
       };
     });
 
     setSliders(newSliders);
-  }, [workingPopulation, occupationSize]);
+  }, [workingPopulation, occupationSize, lockStatus]);
 
   const handleToggleLock = (id: keyof OccupationsState["size"]) => {
+    const currentLockStatus = sliders.find((s) => s.id === id)?.locked || false;
+    dispatch(setOccupationLockStatus({ id, locked: !currentLockStatus }));
+
     setSliders((prevSliders) =>
       prevSliders.map((slider) =>
         slider.id === id ? { ...slider, locked: !slider.locked } : slider,

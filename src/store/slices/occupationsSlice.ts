@@ -30,6 +30,9 @@ export interface OccupationsState {
     blacksmiths: number;
     tailors: number;
   };
+  lockStatus: {
+    [key: string]: boolean;
+  };
 }
 
 const occupationsSlice = createSlice({
@@ -45,9 +48,19 @@ const occupationsSlice = createSlice({
     setOccupationSize(state, action: PayloadAction<OccupationsState["size"]>) {
       state.size = action.payload;
     },
+    setOccupationLockStatus(
+      state,
+      action: PayloadAction<{ id: string; locked: boolean }>,
+    ) {
+      const { id, locked } = action.payload;
+      state.lockStatus[id] = locked;
+    },
   },
 });
 
-export const { setOccupationAllocation, setOccupationSize } =
-  occupationsSlice.actions;
+export const {
+  setOccupationAllocation,
+  setOccupationSize,
+  setOccupationLockStatus,
+} = occupationsSlice.actions;
 export default occupationsSlice.reducer;

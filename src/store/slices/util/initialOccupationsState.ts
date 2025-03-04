@@ -30,4 +30,17 @@ export const initialOccupationsState: OccupationsState = {
     blacksmiths: 0,
     tailors: 0,
   },
+  lockStatus: {
+    hunters: false,
+    gatherers: false,
+    farmers: false,
+    laborers: false,
+    soldiers: false,
+    coalMiners: false,
+    ironMiners: false,
+    goldMiners: false,
+    woodcutters: false,
+    stoneworkers: false,
+    blacksmiths: false,
+  },
 };
