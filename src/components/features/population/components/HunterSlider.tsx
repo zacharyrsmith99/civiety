@@ -4,30 +4,35 @@ import { OccupationsState } from "@/store/slices/occupationsSlice";
 import { getWorkingAgePopulation } from "@/store/middleware/util/stateInformationHelper";
 import { getBaseProductionResourcesWorkerCapacity } from "@/store/middleware/util/occupationActions";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { LockClosedIcon, LockOpen1Icon } from "@radix-ui/react-icons";
 
 interface HunterSliderProps {
   sliderData: {
     percentage: number;
     canAssign: boolean;
     isAvailable: boolean;
+    locked: boolean;
     errorMessage?: string;
   };
   onSliderChange: (
     id: keyof OccupationsState["size"],
     newPercentage: number,
   ) => void;
+  onToggleLock: (id: keyof OccupationsState["size"]) => void;
 }
 
 export const HunterSlider: React.FC<HunterSliderProps> = ({
   sliderData,
   onSliderChange,
+  onToggleLock,
 }) => {
   const workingPopulation = useAppSelector(getWorkingAgePopulation);
   const baseProductionResourcesWorkerCapacity = useAppSelector(
     getBaseProductionResourcesWorkerCapacity,
   );
 
-  const { percentage, canAssign, isAvailable, errorMessage } = sliderData;
+  const { percentage, canAssign, isAvailable, locked, errorMessage } =
+    sliderData;
 
   return (
     <Tooltip
@@ -44,7 +49,20 @@ export const HunterSlider: React.FC<HunterSliderProps> = ({
         `}
       >
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medieval text-amber-200">Hunters</span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medieval text-amber-200">
+              Hunters
+            </span>
+            {isAvailable && (
+              <button
+                onClick={() => onToggleLock("hunters")}
+                className={`p-1 rounded-full hover:bg-slate-800 ${locked ? "text-amber-500" : "text-slate-400"}`}
+                title={locked ? "Unlock slider" : "Lock slider"}
+              >
+                {locked ? <LockClosedIcon /> : <LockOpen1Icon />}
+              </button>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-amber-300">
               {Math.round(percentage)}%

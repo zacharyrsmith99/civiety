@@ -87,9 +87,22 @@ export function processGameTick(
       newFoodConsumptionByCohort: foodConsumptionByCohort,
     }),
   );
+  state = store.getState();
+
+  const buildingUpkeep = calculateBuildingUpkeepResourceUsage(
+    state,
+    tickRateMultiplier,
+  );
+  const newResources = {
+    food: state.resources.stores.food - buildingUpkeep.food,
+    wood: state.resources.stores.wood - buildingUpkeep.wood,
+    stone: state.resources.stores.stone - buildingUpkeep.stone,
+    hide: state.resources.stores.hide - buildingUpkeep.hide,
+  };
+  store.dispatch(updateResources(newResources));
 
   const hideProduction = calculateHideProduction(state, tickRateMultiplier);
-  const hideConsumption = calculateHideConsumption(state, tickRateMultiplier);
+  const hideConsumption = calculateHideConsumption(buildingUpkeep.hide);
   const newHide = calculateNewHideStock(
     state.resources.stores.hide,
     hideProduction,
@@ -105,7 +118,7 @@ export function processGameTick(
   state = store.getState();
 
   const { starvationDeathRateMultipliers, foodSecurityScore } =
-    calculateStarvationDeathRates(state);
+    calculateStarvationDeathRates(state, tickRateMultiplier);
   store.dispatch(setFoodSecurityScore(foodSecurityScore));
   const { housingDeathRateMultipliers, housingScore } =
     calculateLackOfHousingDeathRates(state);
@@ -120,14 +133,6 @@ export function processGameTick(
   store.dispatch(updateCohorts({ cohorts: newCohorts, total: newTotal }));
   state = store.getState();
 
-  const buildingUpkeep = calculateBuildingUpkeepResourceUsage(state);
-  const newResources = {
-    food: state.resources.stores.food - buildingUpkeep.food,
-    wood: state.resources.stores.wood - buildingUpkeep.wood,
-    stone: state.resources.stores.stone - buildingUpkeep.stone,
-    hide: state.resources.stores.hide - buildingUpkeep.hide,
-  };
-  store.dispatch(updateResources(newResources));
   if (state.land.buildingQueue.length > 0) {
     let laborerProduction = calculateLaborerProduction(
       state,

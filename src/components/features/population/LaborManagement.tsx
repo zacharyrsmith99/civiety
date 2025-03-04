@@ -15,6 +15,7 @@ interface OccupationSlider {
   percentage: number;
   canAssign: boolean;
   isAvailable: boolean;
+  locked: boolean;
   errorMessage?: string;
 }
 
@@ -38,6 +39,7 @@ export const LaborManagement: React.FC = () => {
       percentage: 0,
       canAssign: true,
       isAvailable: true,
+      locked: false,
     },
     {
       id: "farmers",
@@ -45,6 +47,7 @@ export const LaborManagement: React.FC = () => {
       percentage: 0,
       canAssign: true,
       isAvailable: true,
+      locked: false,
     },
     {
       id: "hunters",
@@ -52,6 +55,7 @@ export const LaborManagement: React.FC = () => {
       percentage: 0,
       canAssign: true,
       isAvailable: true,
+      locked: false,
     },
     {
       id: "laborers",
@@ -59,6 +63,7 @@ export const LaborManagement: React.FC = () => {
       percentage: 0,
       canAssign: true,
       isAvailable: true,
+      locked: false,
     },
     {
       id: "soldiers",
@@ -67,6 +72,7 @@ export const LaborManagement: React.FC = () => {
       canAssign: false,
       isAvailable: false,
       errorMessage: "Not yet available",
+      locked: false,
     },
     {
       id: "coalMiners",
@@ -75,6 +81,7 @@ export const LaborManagement: React.FC = () => {
       canAssign: false,
       isAvailable: false,
       errorMessage: "Not yet available",
+      locked: false,
     },
     {
       id: "woodcutters",
@@ -83,6 +90,7 @@ export const LaborManagement: React.FC = () => {
       canAssign: false,
       isAvailable: false,
       errorMessage: "Not yet available",
+      locked: false,
     },
   ]);
 
@@ -103,6 +111,14 @@ export const LaborManagement: React.FC = () => {
     setSliders(newSliders);
   }, [workingPopulation, occupationSize]);
 
+  const handleToggleLock = (id: keyof OccupationsState["size"]) => {
+    setSliders((prevSliders) =>
+      prevSliders.map((slider) =>
+        slider.id === id ? { ...slider, locked: !slider.locked } : slider,
+      ),
+    );
+  };
+
   const handleSliderChange = (
     id: keyof OccupationsState["size"],
     newPercentage: number,
@@ -118,7 +134,7 @@ export const LaborManagement: React.FC = () => {
     if (percentageDiff === 0) return;
 
     const adjustableSliders = sliders.filter(
-      (s) => s.id !== id && s.isAvailable && s.canAssign,
+      (s) => s.id !== id && s.isAvailable && s.canAssign && !s.locked,
     );
 
     const totalAdjustablePercentage = adjustableSliders.reduce(
@@ -130,7 +146,7 @@ export const LaborManagement: React.FC = () => {
       if (slider.id === id) {
         return { ...slider, percentage: newPercentage };
       }
-      if (!slider.isAvailable || !slider.canAssign) {
+      if (!slider.isAvailable || !slider.canAssign || slider.locked) {
         return slider;
       }
 
@@ -147,12 +163,14 @@ export const LaborManagement: React.FC = () => {
     });
 
     const total = newSliders.reduce((sum, s) => sum + s.percentage, 0);
-    if (total !== 100) {
+    if (Math.abs(total - 100) > 0.01) {
       const lastAdjustable = newSliders.findLast(
-        (s) => s.isAvailable && s.canAssign && s.id !== id,
+        (s) => s.isAvailable && s.canAssign && s.id !== id && !s.locked,
       );
       if (lastAdjustable) {
         lastAdjustable.percentage += 100 - total;
+      } else {
+        return;
       }
     }
 
@@ -193,18 +211,21 @@ export const LaborManagement: React.FC = () => {
           <GathererSlider
             sliderData={gathererSlider}
             onSliderChange={handleSliderChange}
+            onToggleLock={handleToggleLock}
           />
         )}
         {hunterSlider && (
           <HunterSlider
             sliderData={hunterSlider}
             onSliderChange={handleSliderChange}
+            onToggleLock={handleToggleLock}
           />
         )}
         {laborerSlider && (
           <LaborerSlider
             sliderData={laborerSlider}
             onSliderChange={handleSliderChange}
+            onToggleLock={handleToggleLock}
           />
         )}
         {sliders
@@ -245,7 +266,9 @@ export const LaborManagement: React.FC = () => {
                 onChange={(e) =>
                   handleSliderChange(slider.id, parseFloat(e.target.value))
                 }
-                disabled={!slider.isAvailable || !slider.canAssign}
+                disabled={
+                  !slider.isAvailable || !slider.canAssign || slider.locked
+                }
                 className="
                   w-full h-2 rounded-lg appearance-none cursor-pointer
                   bg-slate-700 

@@ -340,7 +340,10 @@ const ageGroupVulnerability = {
   elders: 2.5,
 };
 
-export function calculateStarvationDeathRates(state: RootState): {
+export function calculateStarvationDeathRates(
+  state: RootState,
+  tickRateMultiplier: number,
+): {
   starvationDeathRateMultipliers: Record<string, number>;
   foodSecurityScore: number;
 } {
@@ -364,14 +367,16 @@ export function calculateStarvationDeathRates(state: RootState): {
     };
   }
 
-  const daysOfFoodRemaining = Math.max(0, food / foodConsumption);
+  const daysOfFoodRemaining = Math.max(
+    0,
+    food / (foodConsumption / tickRateMultiplier),
+  );
   const stockFactor = Math.min(1, daysOfFoodRemaining / 90);
 
   const changeRate = foodProduction / foodConsumption; // Ratio of production to consumption
   const changeFactor = changeRate >= 1 ? 1.0 : Math.max(0, changeRate); // 0-1 based on sustainability
 
   const absoluteStarvationFactor = food <= 0 ? 0.0 : 1.0;
-
   let foodSecurityScore =
     stockFactor * 0.15 + changeFactor * 0.1 + absoluteStarvationFactor * 0.75;
   foodSecurityScore = Math.max(0, Math.min(1, foodSecurityScore));

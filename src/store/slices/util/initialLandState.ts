@@ -50,7 +50,7 @@ const generateInitialMap = (): Record<string, LandTile> => {
       HousingBuilding
     >
   )["makeshiftHousing"] = {
-    level: 1000,
+    level: 333,
   };
 
   tiles["0,0"].usedSpaceUnits = 1000;
@@ -111,12 +111,12 @@ export const initialState: LandState = {
     housing: {
       makeshiftHousing: {
         labor: 0.00028,
-        hide: 0.0002,
+        hide: 0.00025,
         food: 0.0,
         wood: 0.0,
         stone: 0.0,
       },
-      hut: { labor: 0.00056, hide: 0.0004, food: 0.0, wood: 0.0, stone: 0.0 },
+      hut: { labor: 0.0012, hide: 0.0005, food: 0.0, wood: 0.0, stone: 0.0 },
     },
     agriculture: {
       farm: { labor: 0.0, hide: 0.0, food: 0.0, wood: 0.0, stone: 0.0 },

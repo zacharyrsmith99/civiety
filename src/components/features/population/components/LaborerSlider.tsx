@@ -3,27 +3,32 @@ import { useAppSelector } from "@/store/hooks";
 import { OccupationsState } from "@/store/slices/occupationsSlice";
 import { getWorkingAgePopulation } from "@/store/middleware/util/stateInformationHelper";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { LockClosedIcon, LockOpen1Icon } from "@radix-ui/react-icons";
 
 interface LaborerSliderProps {
   sliderData: {
     percentage: number;
     canAssign: boolean;
     isAvailable: boolean;
+    locked: boolean;
     errorMessage?: string;
   };
   onSliderChange: (
     id: keyof OccupationsState["size"],
     newPercentage: number,
   ) => void;
+  onToggleLock: (id: keyof OccupationsState["size"]) => void;
 }
 
 export const LaborerSlider: React.FC<LaborerSliderProps> = ({
   sliderData,
   onSliderChange,
+  onToggleLock,
 }) => {
   const workingPopulation = useAppSelector(getWorkingAgePopulation);
 
-  const { percentage, canAssign, isAvailable, errorMessage } = sliderData;
+  const { percentage, canAssign, isAvailable, locked, errorMessage } =
+    sliderData;
 
   return (
     <Tooltip
@@ -37,10 +42,24 @@ export const LaborerSlider: React.FC<LaborerSliderProps> = ({
           ${!isAvailable ? "opacity-50" : ""}
           relative overflow-hidden
           hover:bg-slate-900/70 transition-colors duration-200
+          ${locked ? "border-amber-500" : ""}
         `}
       >
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medieval text-amber-200">Laborers</span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medieval text-amber-200">
+              Laborers
+            </span>
+            {isAvailable && (
+              <button
+                onClick={() => onToggleLock("laborers")}
+                className={`p-1 rounded-full hover:bg-slate-800 ${locked ? "text-amber-500" : "text-slate-400"}`}
+                title={locked ? "Unlock slider" : "Lock slider"}
+              >
+                {locked ? <LockClosedIcon /> : <LockOpen1Icon />}
+              </button>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-amber-300">
               {Math.round(percentage)}%
@@ -59,7 +78,7 @@ export const LaborerSlider: React.FC<LaborerSliderProps> = ({
           onChange={(e) =>
             onSliderChange("laborers", parseFloat(e.target.value))
           }
-          disabled={!isAvailable || !canAssign}
+          disabled={!isAvailable || !canAssign || locked}
           className="
             w-full h-2 rounded-lg appearance-none cursor-pointer
             bg-slate-700 

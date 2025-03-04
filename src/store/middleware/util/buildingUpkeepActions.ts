@@ -74,7 +74,10 @@ function getBuildingUpkeepCostsFromTile(
   };
 }
 
-export function calculateBuildingUpkeepResourceUsage(state: RootState) {
+export function calculateBuildingUpkeepResourceUsage(
+  state: RootState,
+  tickRateMultiplier: number,
+) {
   const resourcesUsed = {
     labor: 0,
     food: 0,
@@ -91,7 +94,8 @@ export function calculateBuildingUpkeepResourceUsage(state: RootState) {
       state.land.buildingUpkeepCosts,
     );
     Object.entries(upkeepCosts).forEach(([key, value]) => {
-      resourcesUsed[key as keyof typeof resourcesUsed] += value;
+      resourcesUsed[key as keyof typeof resourcesUsed] +=
+        value * tickRateMultiplier;
     });
   });
 

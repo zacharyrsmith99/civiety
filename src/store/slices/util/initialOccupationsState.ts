@@ -3,10 +3,10 @@ import { initialAdultSize } from "./initialPopulationCohortsState";
 
 export const initialOccupationsState: OccupationsState = {
   occupationAllocation: {
-    hunters: 0.05,
-    gatherers: 0.95,
+    hunters: 0.2,
+    gatherers: 0.75,
     farmers: 0,
-    laborers: 0,
+    laborers: 0.05,
     soldiers: 0,
     coalMiners: 0,
     ironMiners: 0,

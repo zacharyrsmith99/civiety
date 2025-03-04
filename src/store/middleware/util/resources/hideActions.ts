@@ -37,11 +37,8 @@ export function calculateHideProduction(
   );
 }
 
-export function calculateHideConsumption(
-  state: RootState,
-  tickRateMultiplier: number,
-) {
-  return 0;
+export function calculateHideConsumption(hideBuildingConsumption: number) {
+  return hideBuildingConsumption;
 }
 
 export function calculateNewHideStock(
