@@ -126,7 +126,14 @@ export const LaborManagement: React.FC = () => {
     if (!sliders.find((s) => s.id === id)?.isAvailable) return;
     if (workingPopulation === 0) return;
 
-    newPercentage = Math.max(0, Math.min(100, newPercentage));
+    const lockedPercentage = sliders.reduce(
+      (sum, s) => (s.locked && s.id !== id ? sum + s.percentage : sum),
+      0,
+    );
+
+    const maxAllowedPercentage = 100 - lockedPercentage;
+
+    newPercentage = Math.max(0, Math.min(maxAllowedPercentage, newPercentage));
 
     const currentSlider = sliders.find((s) => s.id === id)!;
     const percentageDiff = newPercentage - currentSlider.percentage;
@@ -146,33 +153,47 @@ export const LaborManagement: React.FC = () => {
       if (slider.id === id) {
         return { ...slider, percentage: newPercentage };
       }
+
       if (!slider.isAvailable || !slider.canAssign || slider.locked) {
         return slider;
       }
 
-      const adjustmentRatio =
-        totalAdjustablePercentage === 0
-          ? 0
-          : slider.percentage / totalAdjustablePercentage;
-      const newSliderPercentage = Math.max(
-        0,
-        slider.percentage - percentageDiff * adjustmentRatio,
-      );
+      let newSliderPercentage;
+      if (totalAdjustablePercentage <= 0) {
+        newSliderPercentage =
+          (100 - newPercentage - lockedPercentage) / adjustableSliders.length;
+      } else {
+        const adjustmentRatio = slider.percentage / totalAdjustablePercentage;
+        newSliderPercentage = Math.max(
+          0,
+          slider.percentage - percentageDiff * adjustmentRatio,
+        );
+      }
 
       return { ...slider, percentage: newSliderPercentage };
     });
 
     const total = newSliders.reduce((sum, s) => sum + s.percentage, 0);
     if (Math.abs(total - 100) > 0.01) {
-      const lastAdjustable = newSliders.findLast(
-        (s) => s.isAvailable && s.canAssign && s.id !== id && !s.locked,
+      const adjustableSlider = newSliders.find(
+        (s) => s.isAvailable && s.canAssign && !s.locked && s.id !== id,
       );
-      if (lastAdjustable) {
-        lastAdjustable.percentage += 100 - total;
+
+      if (adjustableSlider) {
+        adjustableSlider.percentage += 100 - total;
       } else {
-        return;
+        const currentSlider = newSliders.find((s) => s.id === id);
+        if (currentSlider) {
+          currentSlider.percentage += 100 - total;
+        } else {
+          return;
+        }
       }
     }
+
+    newSliders.forEach((slider) => {
+      if (slider.percentage < 0) slider.percentage = 0;
+    });
 
     setSliders(newSliders);
 
