@@ -72,6 +72,7 @@ export const initialState: LandState = {
         food: 0.0,
         wood: 0.0,
         stone: 0.0,
+        knowledge: 0.0,
       },
       hut: {
         labor: 2,
@@ -79,6 +80,7 @@ export const initialState: LandState = {
         food: 0.0,
         wood: 0.0,
         stone: 0.0,
+        knowledge: 0.0,
       },
     },
     agriculture: {
@@ -88,6 +90,7 @@ export const initialState: LandState = {
         food: 0.0,
         wood: 0.0,
         stone: 0.0,
+        knowledge: 0.0,
       },
     },
     industry: {
@@ -97,6 +100,7 @@ export const initialState: LandState = {
         food: 0.0,
         wood: 0.0,
         stone: 0.0,
+        knowledge: 0.0,
       },
       lumberCamp: {
         labor: 10,
@@ -104,6 +108,7 @@ export const initialState: LandState = {
         food: 0.0,
         wood: 0.0,
         stone: 0.0,
+        knowledge: 0.0,
       },
     },
   },
@@ -115,15 +120,44 @@ export const initialState: LandState = {
         food: 0.0,
         wood: 0.0,
         stone: 0.0,
+        knowledge: 0.0,
       },
-      hut: { labor: 0.0012, hide: 0.0005, food: 0.0, wood: 0.0, stone: 0.0 },
+      hut: {
+        labor: 0.0012,
+        hide: 0.0005,
+        food: 0.0,
+        wood: 0.0,
+        stone: 0.0,
+        knowledge: 0.0,
+      },
     },
     agriculture: {
-      farm: { labor: 0.0, hide: 0.0, food: 0.0, wood: 0.0, stone: 0.0 },
+      farm: {
+        labor: 0.0,
+        hide: 0.0,
+        food: 0.0,
+        wood: 0.0,
+        stone: 0.0,
+        knowledge: 0.0,
+      },
     },
     industry: {
-      mine: { labor: 0.0, hide: 0.0, food: 0.0, wood: 0.0, stone: 0.0 },
-      lumberCamp: { labor: 0.0, hide: 0.0, food: 0.0, wood: 0.0, stone: 0.0 },
+      mine: {
+        labor: 0.0,
+        hide: 0.0,
+        food: 0.0,
+        wood: 0.0,
+        stone: 0.0,
+        knowledge: 0.0,
+      },
+      lumberCamp: {
+        labor: 0.0,
+        hide: 0.0,
+        food: 0.0,
+        wood: 0.0,
+        stone: 0.0,
+        knowledge: 0.0,
+      },
     },
   },
   buildingInfo: {

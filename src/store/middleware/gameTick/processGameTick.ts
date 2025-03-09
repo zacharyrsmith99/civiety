@@ -98,6 +98,7 @@ export function processGameTick(
     wood: state.resources.stores.wood - buildingUpkeep.wood,
     stone: state.resources.stores.stone - buildingUpkeep.stone,
     hide: state.resources.stores.hide - buildingUpkeep.hide,
+    knowledge: state.resources.stores.knowledge - buildingUpkeep.knowledge,
   };
   store.dispatch(updateResources(newResources));
 

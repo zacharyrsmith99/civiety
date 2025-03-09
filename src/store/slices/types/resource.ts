@@ -5,10 +5,12 @@ export interface ResourceStores {
   hide: number;
   stone: number;
   wood: number;
+  knowledge: number;
 }
 
 export interface ResourcesState {
   stores: ResourceStores;
+  knowledgeProduction: number;
   foodProduction: number;
   farmFoodProduction: number;
   gatherFoodProduction: number;

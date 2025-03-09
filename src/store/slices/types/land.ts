@@ -1,3 +1,5 @@
+import { ResourceStores } from "./resource";
+
 export type TerrainType = "flat" | "hill" | "coastal" | "mountain";
 export type BiomeType =
   | "grassland"
@@ -59,27 +61,76 @@ export interface Buildings {
   industry: Record<IndustryBuildingType, IndustryBuilding> | {};
 }
 
-export interface BuildingQueue {
-  name: HousingBuildingType | AgricultureBuildingType | IndustryBuildingType;
+export type HousingBuildingInitialCosts = {
+  labor: number;
+} & {
+  [key in keyof ResourceStores]: number;
+};
+
+export type HousingBuildingRemainingCosts = {
+  labor: number;
+} & {
+  [key in keyof ResourceStores]: number;
+};
+
+export type AgricultureBuildingInitialCosts = {
+  labor: number;
+} & {
+  [key in keyof ResourceStores]: number;
+};
+
+export type AgricultureBuildingRemainingCosts = {
+  labor: number;
+} & {
+  [key in keyof ResourceStores]: number;
+};
+
+export type IndustryBuildingInitialCosts = {
+  labor: number;
+} & {
+  [key in keyof ResourceStores]: number;
+};
+
+export type IndustryBuildingRemainingCosts = {
+  labor: number;
+} & {
+  [key in keyof ResourceStores]: number;
+};
+
+export interface HousingBuildingQueueItem {
+  name: HousingBuildingType;
   type: keyof Buildings;
   position: GridPosition;
   level: number;
-  initialCost: {
-    labor: number;
-    hide: number;
-    food: number;
-    wood: number;
-    stone: number;
-  };
-  remainingCost: {
-    labor: number;
-    hide: number;
-    food: number;
-    wood: number;
-    stone: number;
-  };
+  initialCost: HousingBuildingInitialCosts;
+  remainingCost: AgricultureBuildingRemainingCosts;
   accumulatedLabor: number;
 }
+
+export interface AgricultureBuildingQueueItem {
+  name: AgricultureBuildingType;
+  type: keyof Buildings;
+  position: GridPosition;
+  level: number;
+  initialCost: AgricultureBuildingInitialCosts;
+  remainingCost: AgricultureBuildingRemainingCosts;
+  accumulatedLabor: number;
+}
+
+export interface IndustryBuildingQueueItem {
+  name: IndustryBuildingType;
+  type: keyof Buildings;
+  position: GridPosition;
+  level: number;
+  initialCost: IndustryBuildingInitialCosts;
+  remainingCost: IndustryBuildingRemainingCosts;
+  accumulatedLabor: number;
+}
+
+export type BuildingQueueItem =
+  | HousingBuildingQueueItem
+  | AgricultureBuildingQueueItem
+  | IndustryBuildingQueueItem;
 
 export interface LandTile {
   position: GridPosition;
@@ -95,43 +146,17 @@ export interface LandTile {
   improvements: Improvement[];
 }
 
-export interface HousingBuildingInitialCosts {
-  labor: number;
-  hide: number;
-  food: number;
-  wood: number;
-  stone: number;
-}
-
-export interface AgricultureBuildingInitialCosts {
-  labor: number;
-  hide: number;
-  food: number;
-  wood: number;
-  stone: number;
-}
-
-export interface IndustryBuildingInitialCosts {
-  labor: number;
-  hide: number;
-  food: number;
-  wood: number;
-  stone: number;
-}
-
 export interface BuildingInitialCosts {
   housing: Record<HousingBuildingType, HousingBuildingInitialCosts>;
   agriculture: Record<AgricultureBuildingType, AgricultureBuildingInitialCosts>;
   industry: Record<IndustryBuildingType, IndustryBuildingInitialCosts>;
 }
 
-export interface ResourceUpkeepCosts {
+export type ResourceUpkeepCosts = {
   labor: number;
-  food: number;
-  wood: number;
-  stone: number;
-  hide: number;
-}
+} & {
+  [key in keyof ResourceStores]: number;
+};
 
 export interface BuildingUpkeepCosts {
   housing: Record<HousingBuildingType, ResourceUpkeepCosts>;
@@ -161,6 +186,6 @@ export interface LandState {
   biomeFarmerFoodProductionMultipliers: Record<BiomeType, number[]>;
   buildingInitialCosts: BuildingInitialCosts;
   buildingUpkeepCosts: BuildingUpkeepCosts;
-  buildingQueue: BuildingQueue[];
+  buildingQueue: BuildingQueueItem[];
   buildingInfo: BuildingInfo;
 }

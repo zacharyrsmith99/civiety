@@ -1,7 +1,7 @@
 import {
   AgricultureBuildingType,
   BuildingInitialCosts,
-  BuildingQueue,
+  BuildingQueueItem,
   HousingBuildingType,
   IndustryBuildingType,
   LandTile,
@@ -114,7 +114,7 @@ function subtractResources(
 }
 
 function processBuildingQueueItem(
-  building: BuildingQueue,
+  building: BuildingQueueItem,
   buildingInitialCosts: BuildingInitialCosts,
   resourceStores: ResourceStores,
   laborProduction: number,
@@ -249,7 +249,7 @@ export function processBuildingQueue(
   const { tiles } = state.land;
 
   const newTiles: Record<string, LandTile> = {};
-  const newBuildingQueue: BuildingQueue[] = [];
+  const newBuildingQueue: BuildingQueueItem[] = [];
 
   let currentLaborProduction = laborProduction;
 

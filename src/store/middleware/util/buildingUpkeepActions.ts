@@ -15,6 +15,7 @@ function getBuildingUpkeepCostsFromTile(
     wood: 0,
     stone: 0,
     hide: 0,
+    knowledge: 0,
   };
 
   const housingUpkeepCosts = {
@@ -24,6 +25,7 @@ function getBuildingUpkeepCostsFromTile(
       wood: 0,
       stone: 0,
       hide: 0,
+      knowledge: 0,
     },
     hut: {
       labor: 0,
@@ -31,6 +33,7 @@ function getBuildingUpkeepCostsFromTile(
       wood: 0,
       stone: 0,
       hide: 0,
+      knowledge: 0,
     },
   };
 
@@ -65,6 +68,12 @@ function getBuildingUpkeepCostsFromTile(
         building.level;
       upkeepCosts.hide += hideCost;
       housingUpkeepCosts[key as HousingBuildingType].hide += hideCost;
+
+      const knowledgeCost =
+        buildingUpkeepCosts.housing[key as HousingBuildingType].knowledge *
+        building.level;
+      upkeepCosts.knowledge += knowledgeCost;
+      housingUpkeepCosts[key as HousingBuildingType].knowledge += knowledgeCost;
     });
   }
 
@@ -84,6 +93,7 @@ export function calculateBuildingUpkeepResourceUsage(
     wood: 0,
     stone: 0,
     hide: 0,
+    knowledge: 0,
   };
 
   const tiles = Object.values(state.land.tiles);
