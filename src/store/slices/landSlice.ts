@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../types";
 import {
-  BuildingQueue,
+  BuildingQueueItem,
   GridPosition,
   Improvement,
   LandTile,
@@ -17,7 +17,7 @@ export const landSlice = createSlice({
       state,
       action: PayloadAction<{
         tiles: Record<string, LandTile>;
-        buildingQueue: BuildingQueue[];
+        buildingQueue: BuildingQueueItem[];
       }>,
     ) => {
       state.tiles = action.payload.tiles;
@@ -180,7 +180,7 @@ export const landSlice = createSlice({
       }
     },
 
-    addBuildingToQueue: (state, action: PayloadAction<BuildingQueue>) => {
+    addBuildingToQueue: (state, action: PayloadAction<BuildingQueueItem>) => {
       state.buildingQueue.push(action.payload);
     },
   },
