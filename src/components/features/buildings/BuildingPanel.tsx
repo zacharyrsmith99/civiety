@@ -76,6 +76,7 @@ export const BuildingPanel: React.FC<BuildingPanelProps> = ({
           food: initialCost.food * selectedQuantity,
           wood: initialCost.wood * selectedQuantity,
           stone: initialCost.stone * selectedQuantity,
+          knowledge: initialCost.knowledge * selectedQuantity,
         },
         remainingCost: {
           labor: initialCost.labor * selectedQuantity,
@@ -83,6 +84,7 @@ export const BuildingPanel: React.FC<BuildingPanelProps> = ({
           food: initialCost.food * selectedQuantity,
           wood: initialCost.wood * selectedQuantity,
           stone: initialCost.stone * selectedQuantity,
+          knowledge: initialCost.knowledge * selectedQuantity,
         },
         accumulatedLabor: 0,
       }),
